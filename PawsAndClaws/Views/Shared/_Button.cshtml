@@ -1,0 +1,38 @@
+@model ButtonViewModel
+
+@{
+    var baseClasses = "w-full mt-6 flex items-center justify-center gap-2 px-4 py-3 rounded-full text-sm font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    
+   var variantClasses = Model.Variant switch
+    {
+        "secondary" => "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500",
+        "outline" => "bg-white/20 backdrop-blur-md border border-white/30 uppercase tracking-widest hover:bg-white/30",
+        "ghost" => "bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
+        "danger" => "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+        
+        _ => "bg-gradient-to-r from-[#F28C28] via-[#F97316] to-[#FBBF24] text-white uppercase tracking-widest shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.23)] hover:scale-[1.02] active:scale-[0.98] focus:ring-orange-500" 
+    };
+
+    var combinedClasses = $"{baseClasses} {variantClasses} {Model.ClassName}";
+}
+
+@if (!string.IsNullOrEmpty(Model.Href))
+{
+    <a href="@Model.Href" class="@combinedClasses">
+        @Model.Text
+        @if (!string.IsNullOrEmpty(Model.Icon))
+        {
+            <i data-lucide="@Model.Icon" class="w-5 h-5"></i>
+        }
+    </a>
+}
+else
+{
+    <button type="@Model.Type" class="@combinedClasses">
+        @Model.Text
+        @if (!string.IsNullOrEmpty(Model.Icon))
+        {
+            <i data-lucide="@Model.Icon" class="w-5 h-5"></i>
+        }
+    </button>
+}

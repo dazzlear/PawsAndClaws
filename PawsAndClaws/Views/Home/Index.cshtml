@@ -1,8 +1,109 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<PawsAndClaws.Models.Pet>
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="bg-[#FFFAF7] min-h-screen pb-20">
+    <section class="max-w-7xl mx-auto px-4 pt-12 flex flex-col md:flex-row items-center gap-12">
+        <div class="w-full md:w-1/2">
+            <img src="~/images/Landing.png" alt="Landing Illustration" class="w-full h-auto object-contain" />
+        </div>
+        <div class="w-full md:w-1/2 space-y-6">
+            <div class="inline-flex items-center gap-2 border border-[#F87004] bg-[#F87004]/10 px-4 py-2 rounded-full">
+                <i data-lucide="paw-print" class="w-4 h-4 text-[#F87004]"></i>
+                <span class="text-[#F87004] text-[10px] font-black tracking-widest uppercase">Paws & Claws For a Cause</span>
+            </div>
+            <h1 class="text-6xl font-black text-[#2D2D2D] leading-tight" style="font-family: 'Lilita One', cursive;">
+                Where every wag <span class="text-[#56C2B1]">tells a story.</span>
+            </h1>
+            <p class="text-gray-500 font-medium leading-relaxed max-w-md">
+                Open your heart to a new companion. We connect thousands of loving families with pets in need of a second chance.
+            </p>
+            <div class="w-52">
+                @await Html.PartialAsync("_Button", new ButtonViewModel {
+                    Text = "Adopt Now",
+                    Icon = "arrow-right",
+                    Variant = "primary",
+                    ClassName = "mt-4 shadow-teal-100"
+                })
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 mt-32 relative"> <div class="absolute -top-24 right-0 z-20 w-1/2  pointer-events-none select-none">
+        <img src="~/images/SearchVector.png" 
+             alt="Search Illustration" 
+             class="w-[400px] h-auto transform scale-110 drop-shadow-xl" />
+    </div>
+
+    <div class="bg-gradient-to-r from-[#F87004] to-[#FBBF24] rounded-3xl p-12 flex flex-col md:flex-row items-center justify-between relative overflow-visible shadow-xl shadow-orange-100">
+        
+        <div class="z-10 w-full">
+            <h2 class="text-4xl font-black text-white mb-4" style="font-family: 'Lilita One', cursive;">
+                Find your <span class="text-orange-100">fur-ever!</span>
+            </h2>
+            <p class="text-white/90 text-sm font-medium mb-8 max-w-sm">
+                Filter by species or search for a specific breed. Your new best friend is currently among these faces.
+            </p>
+            
+            <div class="relative max-w-md">
+                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                <input type="text" placeholder="Search name or breed..." 
+                       class="w-full pl-14 pr-6 py-4 bg-white rounded-full shadow-sm focus:outline-none text-sm" />
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section class="max-w-7xl mx-auto px-4 mt-24">
+        <div class="mb-10">
+            <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                Look for your <span class="text-[#F87004]">purrrfect</span> match
+            </h2>
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">Filter lorem ipsum</p>
+        </div>
+
+        <div class="flex flex-wrap gap-8 mb-12">
+            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Cat</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Dog</button>
+            </div>
+            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Female</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Male</button>
+            </div>
+            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Small</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Medium</button>
+                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Large</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @foreach (var pet in Model)
+            {
+                @await Html.PartialAsync("_PetCard", pet)
+            }
+        </div>
+
+        <div class="flex justify-center items-center gap-6 mt-20">
+            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+            <div class="flex gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#56C2B1]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+            </div>
+            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </section>
 </div>
