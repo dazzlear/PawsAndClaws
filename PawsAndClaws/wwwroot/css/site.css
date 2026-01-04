@@ -1,6 +1,7 @@
 html {
   font-size: 14px;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
@@ -24,6 +25,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  overflow-x: hidden;
 }
 
 .form-floating > .form-control-plaintext::placeholder,
