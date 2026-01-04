@@ -8,5 +8,6 @@ namespace PawsAndClaws.Models
         public string Variant { get; set; } = "primary"; // Default value
         public string ClassName { get; set; } = string.Empty;
         public string Type { get; set; } = "button";
+        public string? Id { get; set; }
     }
 }

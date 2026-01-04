@@ -1,11 +1,62 @@
 using Microsoft.AspNetCore.Mvc;
 using PawsAndClaws.Models;
 using System.Text.Json; // Needed for saving data to TempData
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace PawsAndClaws.Controllers
 {
     public class AccountController : Controller
     {
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Let me handle the login logic here
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, model.Email),
+                    new Claim(ClaimTypes.Email, model.Email),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                return RedirectToAction("Index", "Home");
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            return Content("Profile Placeholder");
+        }
+
         // STEP 1: Show the Account Registration Page
         [HttpGet]
         public IActionResult Register()

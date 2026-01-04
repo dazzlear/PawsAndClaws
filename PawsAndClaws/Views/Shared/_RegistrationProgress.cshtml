@@ -1,17 +1,8 @@
 @model int
 
-<div class="flex items-center justify-center mb-8 gap-4">
-    @for (int i = 1; i <= 4; i++)
-    {
-        <div class="flex items-center">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 
-                @(i <= Model ? "bg-[#F87004] text-white shadow-lg shadow-orange-100" : "bg-gray-100 text-gray-400")">
-                @i
-            </div>
-            @if (i < 4)
-            {
-                <div class="w-8 h-0.5 mx-2 @(i < Model ? "bg-[#F87004]" : "bg-gray-100")"></div>
-            }
-        </div>
-    }
+<div class="w-full max-w-xs mx-auto mb-8">
+    <div class="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-[#F87004] transition-all duration-1000 ease-out rounded-full" 
+             style="width: @(Model * 25)%"></div>
+    </div>
 </div>

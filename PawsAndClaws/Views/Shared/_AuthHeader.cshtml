@@ -1,0 +1,17 @@
+@model (string Title, string Highlight, string Subtitle, int? Step)
+
+<div class="text-center mb-10">
+    <div class="inline-flex items-center gap-2 border border-[#F87004] bg-[#F87004]/10 px-4 py-2 rounded-full mb-6">
+        <i data-lucide="paw-print" class="w-4 h-4 text-[#F87004]"></i>
+        <span class="text-[#F87004] text-xs font-bold tracking-widest uppercase">Paws & Claws For a Cause</span>
+    </div>
+    <h1 class="text-5xl font-black text-[#2D2D2D] font-lilita mb-2" style="font-family: 'Lilita One', cursive;">
+        @Model.Title <span class="text-[#56C2B1]">@Model.Highlight</span>
+    </h1>
+    <p class="text-gray-500 font-medium mb-8">@Model.Subtitle</p>
+    
+    @if (Model.Step.HasValue)
+    {
+        <partial name="_RegistrationProgress" model="Model.Step.Value" />
+    }
+</div>

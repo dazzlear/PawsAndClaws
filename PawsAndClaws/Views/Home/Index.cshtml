@@ -21,69 +21,58 @@
                 Open your heart to a new companion. We connect thousands of loving families with pets in need of a second chance.
             </p>
             <div class="w-52">
-                @await Html.PartialAsync("_Button", new ButtonViewModel {
-                    Text = "Adopt Now",
-                    Icon = "arrow-right",
-                    Variant = "primary",
-                    ClassName = "mt-4 shadow-teal-100"
-                })
+                <a href="#pet-cards">
+                    @await Html.PartialAsync("_Button", new ButtonViewModel {
+                        Text = "Adopt Now",
+                        Icon = "arrow-right",
+                        Variant = "primary",
+                        ClassName = "mt-4 bg-gradient-to-r from-[#178F85] to-[#90EFE7] via-[#66BBB4] text-white"
+                    })
+                </a>
             </div>
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-4 mt-32 relative"> <div class="absolute -top-24 right-0 z-20 w-1/2  pointer-events-none select-none">
-        <img src="~/images/SearchVector.png" 
-             alt="Search Illustration" 
-             class="w-[400px] h-auto transform scale-110 drop-shadow-xl" />
-    </div>
 
-    <div class="bg-gradient-to-r from-[#F87004] to-[#FBBF24] rounded-3xl p-12 flex flex-col md:flex-row items-center justify-between relative overflow-visible shadow-xl shadow-orange-100">
-        
-        <div class="z-10 w-full">
-            <h2 class="text-4xl font-black text-white mb-4" style="font-family: 'Lilita One', cursive;">
-                Find your <span class="text-orange-100">fur-ever!</span>
-            </h2>
-            <p class="text-white/90 text-sm font-medium mb-8 max-w-sm">
-                Filter by species or search for a specific breed. Your new best friend is currently among these faces.
-            </p>
-            
-            <div class="relative max-w-md">
-                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></i>
-                <input type="text" placeholder="Search name or breed..." 
-                       class="w-full pl-14 pr-6 py-4 bg-white rounded-full shadow-sm focus:outline-none text-sm" />
+    <section class="max-w-7xl mx-auto px-4 mt-32 relative"> 
+        <div class="absolute -top-[80px] -right-[160px] z-20 w-1/2  pointer-events-none select-none">
+            <img src="~/images/SearchVector.png" 
+                 alt="Search Illustration" 
+                 class="w-[400px] h-auto transform scale-110 drop-shadow-xl" />
+        </div>
+
+        <div class="bg-gradient-to-r from-[#F87004] to-[#FBBF24] rounded-3xl p-12 pl-16 flex flex-col md:flex-row items-center justify-between relative overflow-visible shadow-xl shadow-orange-100">
+            <div class="z-10 w-full">
+                <h2 class="text-5xl font-black text-white mb-4" style="font-family: 'Lilita One', cursive;">
+                    Find your <span class="text-[#EEC55C]">fur-ever!</span>
+                </h2>
+                <p class="text-white/90 text-lg font-medium mb-8 max-w-[600px]">
+                    Filter by species or search for a specific breed. Your new best friend is currently among these faces.
+                </p>
+                <div class="relative max-w-[600px]">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                    <input type="text" id="petSearch" placeholder="Search name or breed..." 
+                           class="w-full pl-14 pr-6 py-4 bg-white rounded-full shadow-sm focus:outline-none text-sm" />
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-    <section class="max-w-7xl mx-auto px-4 mt-24">
+    <section id="pet-cards" class="max-w-7xl mx-auto px-4 mt-24 scroll-mt-24">
         <div class="mb-10">
             <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
-                Look for your <span class="text-[#F87004]">purrrfect</span> match
+                Look for your <span class="text-[#F87004]">purrrfect</span> <span class="text-[#66BBB4]">match</span>
             </h2>
             <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">Filter lorem ipsum</p>
         </div>
 
         <div class="flex flex-wrap gap-8 mb-12">
-            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Cat</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Dog</button>
-            </div>
-            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Female</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">Male</button>
-            </div>
-            <div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm">
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#2D2D2D] text-white">All</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Small</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Medium</button>
-                <button class="px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">Large</button>
-            </div>
+            <partial name="_FilterGroup" model='(new[] { "All", "Cat", "Dog" }, "All", "species")' />
+            <partial name="_FilterGroup" model='(new[] { "All", "Female", "Male" }, "All", "gender")' />
+            <partial name="_FilterGroup" model='(new[] { "All", "Small", "Medium", "Large" }, "All", "size")' />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div id="petGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             @foreach (var pet in Model)
             {
                 @await Html.PartialAsync("_PetCard", pet)
@@ -107,3 +96,69 @@
         </div>
     </section>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('petSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const petCards = document.querySelectorAll('.pet-card');
+
+            const activeFilters = {
+                species: 'All',
+                gender: 'All',
+                size: 'All',
+                search: ''
+            };
+
+            function filterPets() {
+                petCards.forEach(card => {
+                    const species = card.getAttribute('data-species');
+                    const gender = card.getAttribute('data-gender');
+                    const size = card.getAttribute('data-size');
+                    const name = card.getAttribute('data-name');
+                    const breed = card.getAttribute('data-breed');
+
+                    const matchesSpecies = activeFilters.species === 'All' || species === activeFilters.species;
+                    const matchesGender = activeFilters.gender === 'All' || gender === activeFilters.gender;
+                    const matchesSize = activeFilters.size === 'All' || size === activeFilters.size;
+                    const matchesSearch = activeFilters.search === '' || 
+                                        name.includes(activeFilters.search) || 
+                                        breed.includes(activeFilters.search);
+
+                    if (matchesSpecies && matchesGender && matchesSize && matchesSearch) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const group = this.closest('.filter-group');
+                    const filterType = group.getAttribute('data-filter-type');
+                    const filterValue = this.getAttribute('data-filter-value');
+
+                    // Update active filters
+                    activeFilters[filterType] = filterValue;
+
+                    // Update UI
+                    group.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('bg-[#F87004]', 'text-white', 'active');
+                        b.classList.add('text-gray-400', 'hover:text-gray-600', 'hover:bg-gray-50');
+                    });
+                    this.classList.add('bg-[#F87004]', 'text-white', 'active');
+                    this.classList.remove('text-gray-400', 'hover:text-gray-600', 'hover:bg-gray-50');
+
+                    filterPets();
+                });
+            });
+
+            searchInput.addEventListener('input', function () {
+                activeFilters.search = this.value.toLowerCase().trim();
+                filterPets();
+            });
+        });
+    </script>
+}

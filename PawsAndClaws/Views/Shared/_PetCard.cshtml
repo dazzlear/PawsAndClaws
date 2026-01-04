@@ -1,6 +1,12 @@
 @model PawsAndClaws.Models.Pet
 
-<div class="relative w-72 h-[400px] rounded-3xl overflow-hidden shadow-lg group mx-auto transition-transform transform hover:scale-[1.02]">    
+<div class="pet-card relative w-72 h-[400px] rounded-3xl overflow-hidden shadow-lg group mx-auto transition-transform transform hover:scale-[1.02] pointer-events-none"
+     data-species="@Model.Species"
+     data-gender="@Model.Gender"
+     data-size="@Model.Size"
+     data-name="@Model.Name.ToLower()"
+     data-breed="@Model.Breed.ToLower()">
+    <a href="@Url.Action("Details", "Home", new { name = Model.Name })" class="absolute inset-0 z-10 pointer-events-auto" style="cursor:pointer;" aria-label="View details for @Model.Name"></a>
     <img src="@Url.Content(Model.ImageUrl)" class="absolute inset-0 w-full h-full object-cover" />
     
     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -26,14 +32,14 @@
             var btnText = "ADOPT NOW";
             var btnVariant = "primary";
             string? btnIcon = "arrow-right";
-            var btnClass = "mt-4 w-full";
+            var btnClass = "mt-4 w-full pointer-events-auto";
 
             if (string.Equals(Model.Status, "Pending", StringComparison.OrdinalIgnoreCase))
             {
                 btnText = "PENDING";
                 btnVariant = "outline";
                 btnIcon = null;
-                // Adjust for dark background
+                // Adjust for the dark background
                 btnClass += " text-white border-white hover:bg-white/20 hover:text-white";
             }
             else if (string.Equals(Model.Status, "Adopted", StringComparison.OrdinalIgnoreCase))
@@ -41,7 +47,7 @@
                 btnText = "ADOPTED";
                 btnVariant = "outline";
                 btnIcon = null;
-                // Adjust for dark background
+                // Adjust for the dark background
                 btnClass += " text-white hover:bg-white/20 hover:text-white";
             }
         }

@@ -1,12 +1,11 @@
 @model PawsAndClaws.Models.HomeLivingViewModel
 
 @{
-    Layout = "_Layout";
+    Layout = "_AuthLayout";
     ViewData["Title"] = "Home & Living";
 }
 
-<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] flex flex-col items-center justify-center py-12 px-4 font-sans relative overflow-hidden">
-
+@section AuthImages {
     <img src="~/images/Register.png" 
          alt="Registration Illustration" 
          class="absolute bottom-0 left-0 w-64 md:w-80 lg:w-[400px] h-auto pointer-events-none select-none z-0 hidden md:block" />
@@ -14,23 +13,12 @@
     <img src="~/images/Paws.png" 
          alt="Decorative Paw" 
          class="absolute right-16 top-1/2 -translate-y-1/2 w-48 lg:w-72 h-auto pointer-events-none select-none z-0" />
+}
 
-    <div class="z-10 w-full max-w-xl">
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center gap-2 border border-[#F87004] bg-[#F87004]/10 px-4 py-2 rounded-full mb-6">
-                <i data-lucide="paw-print" class="w-4 h-4 text-[#F87004]"></i>
-                <span class="text-[#F87004] text-xs font-bold tracking-widest uppercase">Paws & Claws For a Cause</span>
-            </div>
-            <h1 class="text-5xl font-black text-[#2D2D2D] font-lilita mb-2" style="font-family: 'Lilita One', cursive;">
-                Home & <span class="text-[#56C2B1]">Living</span>
-            </h1>
-            <p class="text-gray-500 font-medium px-8 text-sm mb-8">Where will your new friend be staying?</p>
+<partial name="_AuthHeader" model='("Home &", "Living", "Where will your new friend be staying?", (int?)4)' />
 
-            <partial name="_RegistrationProgress" model="4" />
-        </div>
-
-        <div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full border border-gray-50">
-            <form asp-action="CompleteRegistration" method="post" class="w-full space-y-8">
+<div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full border border-gray-50">
+    <form asp-action="CompleteRegistration" method="post" class="w-full space-y-8">
                 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase ml-4">Full Home Address</label>

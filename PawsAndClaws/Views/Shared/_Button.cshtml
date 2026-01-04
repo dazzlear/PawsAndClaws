@@ -5,8 +5,12 @@
     
    var variantClasses = Model.Variant switch
     {
-        "secondary" => "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500",
-        "outline" => "bg-white/20 backdrop-blur-md border border-white/30 uppercase tracking-widest hover:bg-white/30",
+        // Updated secondary to match the Figma gray state precisely
+        "secondary" => "bg-gray-100 text-gray-400 border border-gray-200 uppercase tracking-widest",
+        
+        // Updated outline for better visibility on white backgrounds
+        "outline" => "bg-transparent border border-gray-200 text-gray-500 hover:bg-gray-50 uppercase tracking-widest",
+        
         "ghost" => "bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
         "danger" => "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
         
@@ -18,21 +22,21 @@
 
 @if (!string.IsNullOrEmpty(Model.Href))
 {
-    <a href="@Model.Href" class="@combinedClasses">
-        @Model.Text
+    <a id="@Model.Id" href="@Model.Href" class="@combinedClasses">
+        <span class="btn-text">@Model.Text</span>
         @if (!string.IsNullOrEmpty(Model.Icon))
         {
-            <i data-lucide="@Model.Icon" class="w-5 h-5"></i>
+            <i data-lucide="@Model.Icon" class="w-5 h-5 btn-icon"></i>
         }
     </a>
 }
 else
 {
-    <button type="@Model.Type" class="@combinedClasses">
-        @Model.Text
+    <button id="@Model.Id" type="@Model.Type" class="@combinedClasses">
+        <span class="btn-text">@Model.Text</span>
         @if (!string.IsNullOrEmpty(Model.Icon))
         {
-            <i data-lucide="@Model.Icon" class="w-5 h-5"></i>
+            <i data-lucide="@Model.Icon" class="w-5 h-5 btn-icon"></i>
         }
     </button>
 }
