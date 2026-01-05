@@ -1,0 +1,77 @@
+@using PawsAndClaws.Models.ViewModels
+@model LoginViewModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Welcome Back";
+}
+
+@section AuthImages {
+    <img src="~/images/Paws.png" 
+         alt="Decorative Paw" 
+         class="absolute left-16 top-1/2 -translate-y-1/2 w-48 lg:w-72 h-auto pointer-events-none select-none z-0" />
+
+    <img src="~/images/LoginVector.png" 
+         alt="Login Illustration" 
+         class="absolute bottom-1 right-0 w-[350px] h-auto pointer-events-none select-none z-0" />
+}
+
+<partial name="_AuthHeader" model='("Your friend", "awaits", "Find your fur-ever bestfriend.", (int?)null)' />
+
+<div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full">
+    
+    <form asp-action="Login" method="post" class="w-full space-y-5">
+                
+                <div class="relative">
+                    <i data-lucide="mail" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                    <input asp-for="Email" type="email" placeholder="Email Address" 
+                           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                </div>
+
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                    <input asp-for="Password" id="passwordInput" type="password" placeholder="Password" 
+                           class="w-full pl-12 pr-12 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                    
+                    @* The ID is on the button container now *@
+                    <button type="button" id="togglePassword" class="absolute right-4 top-3.5 text-gray-300 cursor-pointer focus:outline-none hover:text-gray-500 transition-colors">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-[#178F85] via-[#66BBB4] to-[#90EFE7] text-white font-bold py-4 rounded-full shadow-lg shadow-teal-100 flex items-center justify-center gap-2 hover:opacity-90 transition-all transform hover:scale-[1.01] active:scale-[0.99] mt-8">
+                    Login
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+
+                <p class="text-center text-sm text-gray-400 mt-6">
+                    Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-orange-500 font-bold hover:underline">Sign up here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleButton = document.querySelector('#togglePassword');
+            const passwordInput = document.querySelector('#passwordInput');
+
+            toggleButton.addEventListener('click', function () {
+                // Toggle the input type
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+
+                // Clear the button and insert a fresh <i> tag
+                const iconName = isPassword ? 'eye-off' : 'eye';
+                toggleButton.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5"></i>`;
+
+                // Notify Lucide to find the new <i> tag and turn it into an SVG
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+        });
+    </script>
+}

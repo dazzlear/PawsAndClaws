@@ -1,0 +1,165 @@
+﻿@using PawsAndClaws.Models.ViewModels
+@model IEnumerable<Pet>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="bg-[#FFFAF7] min-h-screen pb-20 overflow-x-hidden">
+    <section class="max-w-7xl mx-auto px-4 pt-12 flex flex-col md:flex-row items-center gap-12">
+        <div class="w-full md:w-1/2">
+            <img src="~/images/Landing.png" alt="Landing Illustration" class="w-full h-auto object-contain" />
+        </div>
+        <div class="w-full md:w-1/2 space-y-6">
+            <div class="inline-flex items-center gap-2 border border-[#F87004] bg-[#F87004]/10 px-4 py-2 rounded-full">
+                <i data-lucide="paw-print" class="w-4 h-4 text-[#F87004]"></i>
+                <span class="text-[#F87004] text-[10px] font-black tracking-widest uppercase">Paws & Claws For a Cause</span>
+            </div>
+            <h1 class="text-6xl font-black text-[#2D2D2D] leading-tight" style="font-family: 'Lilita One', cursive;">
+                Where every wag <span class="text-[#56C2B1]">tells a story.</span>
+            </h1>
+            <p class="text-gray-500 font-medium leading-relaxed max-w-md">
+                Open your heart to a new companion. We connect thousands of loving families with pets in need of a second chance.
+            </p>
+            <div class="w-52">
+                <a href="#pet-cards">
+                    @await Html.PartialAsync("_Button", new ButtonViewModel {
+                        Text = "Adopt Now",
+                        Icon = "arrow-right",
+                        Variant = "primary",
+                        ClassName = "mt-4 bg-gradient-to-r from-[#178F85] to-[#90EFE7] via-[#66BBB4] text-white"
+                    })
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="max-w-7xl mx-auto px-4 mt-32 relative"> 
+        <div class="absolute -top-[80px] -right-[160px] z-20 w-1/2  pointer-events-none select-none">
+            <img src="~/images/SearchVector.png" 
+                 alt="Search Illustration" 
+                 class="w-[400px] h-auto transform scale-110 drop-shadow-xl" />
+        </div>
+
+        <div class="bg-gradient-to-r from-[#F87004] to-[#FBBF24] rounded-3xl p-12 pl-16 flex flex-col md:flex-row items-center justify-between relative overflow-visible shadow-xl shadow-orange-100">
+            <div class="z-10 w-full">
+                <h2 class="text-5xl font-black text-white mb-4" style="font-family: 'Lilita One', cursive;">
+                    Find your <span class="text-[#EEC55C]">fur-ever!</span>
+                </h2>
+                <p class="text-white/90 text-lg font-medium mb-8 max-w-[600px]">
+                    Filter by species or search for a specific breed. Your new best friend is currently among these faces.
+                </p>
+                <div class="relative max-w-[600px]">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                    <input type="text" id="petSearch" placeholder="Search name or breed..." 
+                           class="w-full pl-14 pr-6 py-4 bg-white rounded-full shadow-sm focus:outline-none text-sm" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pet-cards" class="max-w-7xl mx-auto px-4 mt-24 scroll-mt-24">
+        <div class="mb-10">
+            <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                Look for your <span class="text-[#F87004]">purrrfect</span> <span class="text-[#66BBB4]">match</span>
+            </h2>
+            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">Filter lorem ipsum</p>
+        </div>
+
+        <div class="flex flex-wrap gap-8 mb-12">
+            <partial name="_FilterGroup" model='(new[] { "All", "Cat", "Dog" }, "All", "species")' />
+            <partial name="_FilterGroup" model='(new[] { "All", "Female", "Male" }, "All", "gender")' />
+            <partial name="_FilterGroup" model='(new[] { "All", "Small", "Medium", "Large" }, "All", "size")' />
+        </div>
+
+        <div id="petGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @foreach (var pet in Model)
+            {
+                @await Html.PartialAsync("_PetCard", pet)
+            }
+        </div>
+
+        <div class="flex justify-center items-center gap-6 mt-20">
+            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i>
+            </button>
+            <div class="flex gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-[#56C2B1]"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+            </div>
+            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+                <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('petSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const petCards = document.querySelectorAll('.pet-card');
+
+            const activeFilters = {
+                species: 'All',
+                gender: 'All',
+                size: 'All',
+                search: ''
+            };
+
+            function filterPets() {
+                petCards.forEach(card => {
+                    const species = card.getAttribute('data-species');
+                    const gender = card.getAttribute('data-gender');
+                    const size = card.getAttribute('data-size');
+                    const name = card.getAttribute('data-name');
+                    const breed = card.getAttribute('data-breed');
+
+                    const matchesSpecies = activeFilters.species === 'All' || species === activeFilters.species;
+                    const matchesGender = activeFilters.gender === 'All' || gender === activeFilters.gender;
+                    const matchesSize = activeFilters.size === 'All' || size === activeFilters.size;
+                    const matchesSearch = activeFilters.search === '' || 
+                                        name.includes(activeFilters.search) || 
+                                        breed.includes(activeFilters.search);
+
+                    if (matchesSpecies && matchesGender && matchesSize && matchesSearch) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const group = this.closest('.filter-group');
+                    const filterType = group.getAttribute('data-filter-type');
+                    const filterValue = this.getAttribute('data-filter-value');
+
+                    // Update active filters
+                    activeFilters[filterType] = filterValue;
+
+                    // Update UI
+                    group.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('bg-[#F87004]', 'text-white', 'active');
+                        b.classList.add('text-gray-400', 'hover:text-gray-600', 'hover:bg-gray-50');
+                    });
+                    this.classList.add('bg-[#F87004]', 'text-white', 'active');
+                    this.classList.remove('text-gray-400', 'hover:text-gray-600', 'hover:bg-gray-50');
+
+                    filterPets();
+                });
+            });
+
+            searchInput.addEventListener('input', function () {
+                activeFilters.search = this.value.toLowerCase().trim();
+                filterPets();
+            });
+        });
+    </script>
+}

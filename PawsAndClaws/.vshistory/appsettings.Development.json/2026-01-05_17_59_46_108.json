@@ -1,0 +1,11 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "PawsAndClaws": "Server=WOLF-013\\SQLExpress;Database=PawsAndClawsDb;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
+}

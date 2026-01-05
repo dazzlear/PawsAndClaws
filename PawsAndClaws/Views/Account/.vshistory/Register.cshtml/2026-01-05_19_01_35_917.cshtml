@@ -1,0 +1,66 @@
+@using PawsAndClaws.Models.ViewModels
+@model RegisterViewModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Join the Family";
+}
+
+@section AuthImages {
+    <img src="~/images/Register.png" 
+         alt="Registration Illustration" 
+         class="absolute bottom-0 left-0 w-64 md:w-80 lg:w-[400px] h-auto pointer-events-none select-none z-0 hidden md:block" />
+
+    <img src="~/images/Paws.png" 
+         alt="Decorative Paw" 
+         class="absolute right-16 top-1/2 -translate-y-1/2 w-48 lg:w-72 h-auto pointer-events-none select-none z-0" />
+}
+
+<partial name="_AuthHeader" model='("Your friend", "awaits", "Find your fur-ever bestfriend.", (int?)1)' />
+
+<div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full">
+    
+    <form asp-action="Register" method="post" class="w-full space-y-5">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="relative flex-1">
+                        <i data-lucide="user" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                        <input asp-for="FirstName" placeholder="First Name" class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                    </div>
+                    <div class="relative flex-1">
+                        <i data-lucide="user" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                        <input asp-for="LastName" placeholder="Last Name" class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <i data-lucide="mail" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                    <input asp-for="Email" type="email" placeholder="Email Address" class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                </div>
+
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                    <input asp-for="Password" type="password" placeholder="Password" class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                    <i data-lucide="eye" class="absolute right-4 top-3.5 w-5 h-5 text-gray-300 cursor-pointer"></i>
+                </div>
+
+                <div class="relative">
+                    <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
+                    <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" class="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 transition-all" />
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-[#178F85] via-[#66BBB4] to-[#90EFE7] text-white font-bold py-4 rounded-full shadow-lg shadow-teal-100 flex items-center justify-center gap-2 hover:opacity-90 transition-all transform hover:scale-[1.01] active:scale-[0.99] mt-8">
+                    Join the Family
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+
+                <p class="text-center text-sm text-gray-400 mt-6">
+                    Already have an account? <a asp-controller="Account" asp-action="Login" class="text-orange-500 hover:underline">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

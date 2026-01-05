@@ -1,0 +1,23 @@
+@model BadgeViewModel
+
+@{
+    var baseClasses = "inline-flex items-center px-3 py-2 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm";
+    
+    var variantClasses = Model.Variant.ToLower() switch
+    {
+        "success" => "bg-[#46B535] text-white",
+        "warning" => "bg-amber-400 text-white",
+        "danger" => "bg-rose-500 text-white",
+        "info" => "bg-[#F1B722] text-white",
+        "primary" => "bg-indigo-500 text-white",
+        "neutral" => "bg-slate-200 text-slate-700",
+        "outline" => "bg-transparent border border-slate-300 text-slate-600",
+        _ => "bg-slate-200 text-slate-700"
+    };
+
+    var combinedClasses = $"{baseClasses} {variantClasses} {Model.ClassName}";
+}
+
+<span class="@combinedClasses">
+    @Model.Text
+</span>

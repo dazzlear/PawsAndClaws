@@ -1,0 +1,140 @@
+@using PawsAndClaws.Models.ViewModels
+@model HomeLivingViewModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Home & Living";
+}
+
+@section AuthImages {
+    <img src="~/images/Register.png"
+         alt="Registration Illustration"
+         class="absolute bottom-0 left-0 w-64 md:w-80 lg:w-[400px] h-auto pointer-events-none select-none z-0 hidden md:block" />
+
+    <img src="~/images/Paws.png"
+         alt="Decorative Paw"
+         class="absolute right-16 top-1/2 -translate-y-1/2 w-48 lg:w-72 h-auto pointer-events-none select-none z-0" />
+}
+
+<partial name="_AuthHeader" model='("Home &", "Living", "Where will your new friend be staying?", (int?)4)' />
+
+<div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full border border-gray-50">
+
+    <form asp-controller="Account" asp-action="CompleteRegistration" method="post" class="w-full space-y-8">
+        @Html.AntiForgeryToken()
+
+        <div class="space-y-2">
+            <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase ml-4">
+                Full Home Address
+            </label>
+
+            <div class="relative">
+                <i data-lucide="map-pin" class="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#F87004]"></i>
+                <input asp-for="Address"
+                       placeholder="18 Masipag Street, Tahal Avenue"
+                       class="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#56C2B1]/20 transition-all" />
+            </div>
+            <span asp-validation-for="Address" class="text-red-600 text-xs ml-4"></span>
+        </div>
+
+        <div class="space-y-4">
+            <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase ml-4">
+                Living Situation
+            </label>
+
+            <div class="grid grid-cols-3 gap-3">
+                @foreach (var option in new[] { ("House", "home"), ("Apartment", "building-2"), ("Barn", "warehouse") })
+                {
+                    <label class="relative flex flex-col items-center justify-center p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200
+                                      border-gray-50 bg-white hover:border-gray-100
+                                      has-[:checked]:border-[#F87004] has-[:checked]:bg-[#FFF4ED]">
+                        <input type="radio" asp-for="LivingSituation" value="@option.Item1" class="sr-only" />
+                        <i data-lucide="@option.Item2" class="w-6 h-6 mb-2 text-gray-300 [label:has(:checked)_&]:text-[#F87004]"></i>
+                        <span class="text-[10px] font-black tracking-widest uppercase text-gray-300 [label:has(:checked)_&]:text-[#F87004]">
+                            @option.Item1
+                        </span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="flex gap-4 mt-4">
+            <a asp-action="@ViewBag.BackAction"
+               class="flex-1 text-center py-4 rounded-full border-2 border-gray-100 text-gray-400 font-bold hover:bg-gray-50 transition-all">
+                Back
+            </a>
+
+            <button type="button" id="openConfirm" class="flex-[2] bg-gradient-to-r from-[#178F85] via-[#66BBB4] to-[#90EFE7] text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-2 hover:opacity-95 transition-all">
+                Complete Registration
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </form>
+
+    <div id="confirmModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50">
+        <div class="w-[92%] max-w-md rounded-3xl bg-white p-6 shadow-xl">
+            <div class="flex items-start gap-3">
+                <i data-lucide="help-circle" class="w-6 h-6 text-[#F87004] mt-0.5"></i>
+                <div>
+                    <h3 class="text-lg font-extrabold text-gray-800">Confirm Registration</h3>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Are you sure the information you entered is correct?
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button type="button" id="confirmBack"
+                        class="flex-1 py-3 rounded-full border-2 border-gray-100 text-gray-500 font-bold hover:bg-gray-50 transition-all">
+                    Back to Form
+                </button>
+
+                <button type="button" id="confirmContinue"
+                        class="flex-1 py-3 rounded-full bg-[#178F85] text-white font-bold hover:opacity-95 transition-all">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('confirmModal');
+            const openBtn = document.getElementById('openConfirm');
+            const backBtn = document.getElementById('confirmBack');
+            const continueBtn = document.getElementById('confirmContinue');
+
+            // find the form that posts to CompleteRegistration
+            const form = document.querySelector('form[action*="CompleteRegistration"]');
+
+            if (!modal || !openBtn || !backBtn || !continueBtn || !form) return;
+
+            openBtn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                if (window.lucide) window.lucide.createIcons();
+            });
+
+            backBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+
+            continueBtn.addEventListener('click', () => {
+                form.submit();
+            });
+
+            // optional: click outside closes
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        });
+    </script>
+}
