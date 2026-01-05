@@ -6,7 +6,7 @@ namespace PawsAndClaws.Controllers
     {
         public IActionResult MyApplications()
         {
-            return Content("My Applications Placeholder");
+            return View();
         }
     }
 }

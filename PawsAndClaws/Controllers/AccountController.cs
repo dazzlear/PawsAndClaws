@@ -54,7 +54,7 @@ namespace PawsAndClaws.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            return Content("Profile Placeholder");
+            return View();
         }
 
         // STEP 1: Show the Account Registration Page
