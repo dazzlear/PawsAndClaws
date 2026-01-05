@@ -1,0 +1,13 @@
+@model (string[] Options, string ActiveOption, string FilterType)
+
+<div class="flex bg-white border border-gray-100 rounded-full p-1 gap-1 shadow-sm filter-group" data-filter-type="@Model.FilterType">
+    @foreach (var option in Model.Options)
+    {
+        var isActive = option == Model.ActiveOption;
+        <button class="filter-btn px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-200
+                       @(isActive ? "bg-[#F87004] text-white active" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50")"
+                data-filter-value="@option">
+            @option
+        </button>
+    }
+</div>

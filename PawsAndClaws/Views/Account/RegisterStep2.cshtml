@@ -1,0 +1,70 @@
+@model PawsAndClaws.Models.PetPreferenceViewModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Lifestyle Match";
+}
+
+@section AuthImages {
+    <img src="~/images/Register.png" 
+         alt="Registration Illustration" 
+         class="absolute bottom-0 left-0 w-64 md:w-80 lg:w-[400px] h-auto pointer-events-none select-none z-0 hidden md:block" />
+
+    <img src="~/images/Paws.png" 
+         alt="Decorative Paw" 
+         class="absolute right-16 top-1/2 -translate-y-1/2 w-48 lg:w-72 h-auto pointer-events-none select-none z-0" />
+}
+
+<partial name="_AuthHeader" model='("Almost", "there!", "Do you currently have other pets at home? This helps us find the best match for your lifestyle.", (int?)2)' />
+
+<div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full border border-gray-50">
+    <form asp-action="ProcessStep2" method="post" class="w-full space-y-4">
+                
+                <label class="relative flex items-center p-3 border-2 rounded-3xl cursor-pointer transition-all duration-200
+                              border-gray-100 bg-white
+                              has-[:checked]:border-[#F87004] has-[:checked]:bg-[#FFF4ED]">
+                    
+                    <input type="radio" name="hasOtherPets" value="true" class="sr-only" @(Model.HasOtherPets ? "checked" : "") />
+                    
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mr-6 transition-colors duration-200
+                                bg-gray-50 text-gray-400 
+                                parent-has-[:checked]:bg-[#F87004] 
+                                has-[:checked]:parent-bg-[#F87004] [label:has(:checked)_&]:bg-[#F87004] [label:has(:checked)_&]:text-white [label:has(:checked)_&]:shadow-lg [label:has(:checked)_&]:shadow-orange-200">
+                        <i data-lucide="dog" class="w-8 h-8"></i>
+                    </div>
+                    
+                    <span class="font-bold text-2xl transition-colors duration-200 text-gray-400 [label:has(:checked)_&]:text-[#F87004]">
+                        Yes, I have pets
+                    </span>
+                </label>
+
+                <label class="relative flex items-center p-3 border-2 rounded-3xl cursor-pointer transition-all duration-200
+                              border-gray-100 bg-white
+                              has-[:checked]:border-[#F87004] has-[:checked]:bg-[#FFF4ED]">
+                    
+                    <input type="radio" name="hasOtherPets" value="false" class="sr-only" @(!Model.HasOtherPets ? "checked" : "") />
+                    
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mr-6 transition-colors duration-200
+                                bg-gray-50 text-gray-400 
+                                [label:has(:checked)_&]:bg-[#F87004] [label:has(:checked)_&]:text-white [label:has(:checked)_&]:shadow-lg [label:has(:checked)_&]:shadow-orange-200">
+                        <i data-lucide="home" class="w-8 h-8"></i>
+                    </div>
+                    
+                    <span class="font-bold text-2xl transition-colors duration-200 text-gray-400 [label:has(:checked)_&]:text-[#F87004]">
+                        No, this is my first
+                    </span>
+                </label>
+
+                <div class="flex gap-4 mt-12">
+                    <a asp-action="Register" class="flex-1 text-center py-4 rounded-full border-2 border-gray-100 text-gray-400 font-bold hover:bg-gray-50 transition-all">
+                        Back
+                    </a>
+                    <button type="submit" class="flex-[2] bg-gradient-to-r from-[#178F85] via-[#66BBB4] to-[#90EFE7] text-white font-bold py-4 rounded-full shadow-lg shadow-teal-100 flex items-center justify-center gap-2 hover:opacity-95 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
+                        Proceed
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
