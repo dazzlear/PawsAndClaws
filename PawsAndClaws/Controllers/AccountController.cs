@@ -96,7 +96,7 @@ namespace PawsAndClaws.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            return Content("Profile Placeholder");
+            return View();
         }
 
         // REGISTER (TempData Wizard)

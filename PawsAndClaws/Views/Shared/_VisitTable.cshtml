@@ -1,0 +1,19 @@
+@model List<ScheduledVisit>
+
+<div class="bg-white rounded-[40px] border border-gray-50 shadow-sm overflow-hidden">
+    <table class="w-full text-left">
+        <thead>
+            <tr class="text-[10px] font-black text-gray-300 uppercase tracking-widest border-b border-gray-50">
+                <th class="px-12 py-8">Pet Name</th>
+                <th class="px-8 py-8">Location</th>
+                <th class="px-8 py-8">Schedule</th>
+                <th class="px-8 py-8 text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+            @foreach (var visit in Model) {
+                <partial name="_VisitRow" model="visit" />
+            }
+        </tbody>
+    </table>
+</div>
