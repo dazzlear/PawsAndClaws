@@ -33,28 +33,35 @@
                 <div class="flex items-center gap-4">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
+                        var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var action = ViewContext.RouteData.Values["action"]?.ToString();
+                        
+                        bool isHomeActive = controller == "Home";
+                        bool isApplicationsActive = controller == "Adoption";
+                        bool isProfileActive = controller == "Account" && action == "Profile";
+
                         @* LOGGED IN: Pill-shaped navigation - Matches image_f39da9.png *@
                         <div class="flex items-center bg-[#F8F9FA] border border-gray-100 rounded-full p-1.5 gap-1 shadow-inner">
                             
-                            @* Active State: Home *@
+                            @* Home *@
                             <a asp-controller="Home" asp-action="Index" 
-                               class="flex items-center gap-2 px-5 py-2 bg-white rounded-full shadow-sm border border-gray-50 transition-all no-underline">
-                                <i data-lucide="home" class="w-4 h-4 text-[#F87004]"></i>
-                                <span class="text-xs font-bold text-[#F87004] uppercase tracking-widest">Home</span>
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isHomeActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="home" class="w-4 h-4 @(isHomeActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isHomeActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Home</span>
                             </a>
 
                             @* Applications *@
                             <a asp-controller="Adoption" asp-action="MyApplications" 
-                               class="flex items-center gap-2 px-5 py-2 rounded-full hover:bg-white/60 transition-all group no-underline">
-                                <i data-lucide="clipboard-list" class="w-4 h-4 text-gray-300 group-hover:text-[#F87004]"></i>
-                                <span class="text-xs font-bold text-gray-400 group-hover:text-gray-600 uppercase tracking-widest">Applications</span>
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isApplicationsActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="clipboard-list" class="w-4 h-4 @(isApplicationsActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isApplicationsActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Applications</span>
                             </a>
 
                             @* Profile *@
                             <a asp-controller="Account" asp-action="Profile" 
-                               class="flex items-center gap-2 px-5 py-2 rounded-full hover:bg-white/60 transition-all group no-underline">
-                                <i data-lucide="user-circle" class="w-4 h-4 text-gray-300 group-hover:text-[#F87004]"></i>
-                                <span class="text-xs font-bold text-gray-400 group-hover:text-gray-600 uppercase tracking-widest">Profile</span>
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isProfileActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="user-circle" class="w-4 h-4 @(isProfileActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isProfileActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Profile</span>
                             </a>
                         </div>
 
@@ -94,6 +101,7 @@
 
     @* Scripts *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
