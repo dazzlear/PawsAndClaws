@@ -1,0 +1,186 @@
+@using PawsAndClaws.Models.ViewModels
+@model PetCardViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = Model.Name + " Profile";
+}
+
+<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] py-12 px-4 flex flex-col items-center justify-center">
+    
+    <div class="max-w-4xl w-full mb-6">
+        <a asp-action="Index" class="inline-flex items-center gap-2 text-[#56C2B1] font-medium text-sm hover:opacity-80 transition-all">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Go Back
+        </a>
+    </div>
+
+    <div class="bg-white rounded-[40px] shadow-sm border border-gray-50 flex flex-col md:flex-row max-w-4xl w-full overflow-hidden">
+        
+        <div class="w-full md:w-2/5 relative h-80 md:h-auto">
+            <img src="@Url.Content(Model.ImageUrl)" class="absolute inset-0 w-full h-full object-cover" />
+            <div class="absolute top-6 left-6">
+                @{
+                    var statusVariant = Model.Status.ToLower() switch {
+                        "pending" => "info",
+                        "adopted" => "neutral",
+                        "available" => "success",
+                        _ => "neutral"
+                    };
+                }
+                <partial name="_Badge" model='new BadgeViewModel { Text = Model.Status, Variant = statusVariant }' />
+            </div>
+        </div>
+
+        <div class="w-full md:w-3/5 p-8 md:p-12 space-y-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-5xl font-black text-[#2D2D2D] font-lilita" style="font-family: 'Lilita One', cursive;">
+                        @Model.Name
+                    </h1>
+                    <p class="text-[#F87004] text-sm mt-2">
+                        @Model.Breed • @Model.Age @(Model.Age == 1 ? "year" : "years") • @Model.Gender
+                    </p>
+
+                    <div class="flex items-center gap-2 mt-4 text-[#56C2B1]">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        <span class="text-sm font-medium">@Model.Location</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative min-h-[160px]">
+                <div id="descriptionSection" class="space-y-2 transition-all duration-300">
+                    @* Updated to text-sm for consistency *@
+                    <h3 class="text-sm font-bold text-gray-400 tracking-widest uppercase">About @Model.Name</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        @Model.Description
+                    </p>
+                </div>
+
+                <div id="applicationSection" class="hidden space-y-4 transition-all duration-300">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-gray-400 tracking-widest uppercase">Adoption Application</h3>
+                        <button type="button" id="cancelApplication"
+                                class="text-[10px] font-black text-red-500 hover:text-red-600 uppercase tracking-widest flex items-center gap-1 transition-colors">
+                            <i data-lucide="x-circle" class="w-3 h-3"></i>
+                            Cancel
+                        </button>
+                    </div>
+
+                    <form id="applicationForm" asp-controller="Adoption" asp-action="Submit" method="post" class="space-y-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="petId" value="@Model.Id" />
+
+                        <textarea id="applicationText"
+                                  name="message"
+                                  class="w-full p-6 rounded-[24px] border border-gray-100 bg-gray-50/30 focus:bg-white focus:border-[#56C2B1] focus:ring-4 focus:ring-[#56C2B1]/10 outline-none transition-all resize-none text-sm text-gray-600 placeholder:text-gray-300"
+                                  placeholder="Tell us why you're the perfect match for @Model.Name..."></textarea>
+
+                        @* Show backend error (e.g., < 20 chars or duplicate) *@
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <p class="text-red-600 text-xs font-semibold">@TempData["ErrorMessage"]</p>
+                        }
+                    </form>
+                </div>
+
+
+            <div>
+                @{
+                    var btnText = "Start Adoption Process";
+                    var btnVariant = "primary";
+                    string? btnIcon = "arrow-right";
+                    var btnClass = "py-4 shadow-orange-100";
+                    var btnId = "adoptionBtn";
+
+                    if (string.Equals(Model.Status, "Pending", StringComparison.OrdinalIgnoreCase) || 
+                        string.Equals(Model.Status, "Adopted", StringComparison.OrdinalIgnoreCase))
+                    {
+                        btnText = Model.Status.ToUpper();
+                        btnVariant = "secondary";
+                        btnIcon = null;
+                        btnClass = "py-4 cursor-not-allowed opacity-70 mt-8"; 
+                        btnId = "statusBtn";
+                    }
+                }
+                <partial name="_Button" model='new ButtonViewModel { 
+                    Id = btnId,
+                    Text = btnText, 
+                    Variant = btnVariant, 
+                    Icon = btnIcon, 
+                    ClassName = btnClass 
+                }' />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const adoptionBtn = document.getElementById('adoptionBtn');
+            const cancelBtn = document.getElementById('cancelApplication');
+            const descriptionSection = document.getElementById('descriptionSection');
+            const applicationSection = document.getElementById('applicationSection');
+            const textarea = document.getElementById('applicationText');
+            const form = document.getElementById('applicationForm');
+
+            function showDescription() {
+                applicationSection.classList.add('hidden');
+                descriptionSection.classList.remove('hidden');
+
+                const btnText = adoptionBtn?.querySelector('.btn-text');
+                const btnIcon = adoptionBtn?.querySelector('.btn-icon');
+
+                if (btnText) btnText.textContent = 'Start Adoption Process';
+                if (btnIcon) {
+                    btnIcon.setAttribute('data-lucide', 'arrow-right');
+                    if (window.lucide) lucide.createIcons();
+                }
+            }
+
+            if (adoptionBtn) {
+                adoptionBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // 1st click -> open form
+                    if (applicationSection.classList.contains('hidden')) {
+                        const descHeight = descriptionSection.offsetHeight;
+                        textarea.style.minHeight = `${Math.max(descHeight, 120)}px`;
+
+                        descriptionSection.classList.add('hidden');
+                        applicationSection.classList.remove('hidden');
+
+                        const btnText = adoptionBtn.querySelector('.btn-text');
+                        const btnIcon = adoptionBtn.querySelector('.btn-icon');
+                        if (btnText) btnText.textContent = 'Submit Application';
+                        if (btnIcon) {
+                            btnIcon.setAttribute('data-lucide', 'check-circle');
+                            if (window.lucide) lucide.createIcons();
+                        }
+                        textarea.focus();
+                        return;
+                    }
+
+                    // 2nd click -> submit
+                    if (!form) return;
+
+                    if (textarea.value.trim().length < 20) {
+                        alert('Please provide a bit more detail!');
+                        return;
+                    }
+
+                    // submit to backend
+                    form.requestSubmit();
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    showDescription();
+                });
+            }
+        });
+    </script>
+}
