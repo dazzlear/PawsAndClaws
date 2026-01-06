@@ -163,24 +163,32 @@ namespace PawsAndClaws.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("PetId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PetId");
+
+                    b.HasIndex("UserId", "PetId")
+                        .IsUnique();
 
                     b.ToTable("AdoptionApplications");
                 });
@@ -403,6 +411,30 @@ namespace PawsAndClaws.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PawsAndClaws.Models.Entities.AdoptionApplication", b =>
+                {
+                    b.HasOne("PawsAndClaws.Models.Entities.Pet", "Pet")
+                        .WithMany("Applications")
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PawsAndClaws.Models.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PawsAndClaws.Models.Entities.Pet", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

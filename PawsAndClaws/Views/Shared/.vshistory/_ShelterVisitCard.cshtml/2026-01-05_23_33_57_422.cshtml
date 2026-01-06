@@ -1,0 +1,23 @@
+@model ScheduledVisit
+
+<div class="bg-[#56C2B1] rounded-[30px] p-6 flex items-center gap-6 shadow-lg shadow-teal-100/30 min-w-[380px]">
+    <div class="bg-white/20 p-3 rounded-2xl">
+        <i data-lucide="calendar" class="w-8 h-8 text-white"></i>
+    </div>
+    <div class="flex-1">
+        <p class="text-white/70 text-[10px] font-bold uppercase tracking-widest">Next Shelter Visit</p>
+        <p class="text-white font-bold text-lg">
+            @if (Model != null)
+            {
+                @Model.Schedule.ToString("ddd, MMM dd • h tt")
+            }
+            else
+            {
+                @:No upcoming visits
+            }
+        </p>
+    </div>
+    <button class="bg-white p-2 rounded-full text-[#F87004] hover:scale-110 transition-transform">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+    </button>
+</div>
