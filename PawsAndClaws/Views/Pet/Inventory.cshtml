@@ -1,0 +1,222 @@
+@model IEnumerable<PawsAndClaws.Models.Pet>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Pet Inventory";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+        <div>
+            <h1 class="text-6xl font-black text-[#2D2D2D] mb-2" style="font-family: 'Lilita One', cursive;">
+                <span class="text-[#F87004]">Pet </span><span class="text-[#56C2B1]">Inventory</span>
+            </h1>
+            <p class="text-gray-500 font-medium">Manage all pets currently listed in the shelter.</p>
+        </div>
+
+        <button onclick="openAddPetModal()" 
+                class="bg-[#F87004] text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center gap-3 hover:scale-[1.03] transition-all">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            Add New Pet
+        </button>
+    </div>
+
+    <div class="mb-10">
+        <div class="relative w-full">
+            <i data-lucide="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+            <input type="text" 
+                   id="searchInput"
+                   placeholder="Search name or breed..." 
+                   class="w-full pl-14 pr-6 py-5 bg-[#F1F3F5] border-none rounded-full focus:outline-none focus:ring-2 focus:ring-[#56C2B1]/20 transition-all text-sm font-medium placeholder:text-gray-400"
+                   onkeyup="filterPets()" />
+        </div>
+    </div>
+
+    <div class="mb-10 flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-3">
+            <h3 class="text-xl font-bold text-[#2D2D2D]">All Pets</h3>
+            <span class="bg-[#F87004] text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black" id="petCount">
+                @Model.Count()
+            </span>
+        </div>
+
+        <div class="flex bg-[#F1F3F5]/50 p-1.5 rounded-full border border-gray-100 gap-1 shadow-inner">
+            <button type="button" onclick="filterByStatus('All')" class="status-filter-btn px-6 py-2 text-xs font-black rounded-full transition-all bg-white text-gray-900 shadow-sm" data-status="All">All</button>
+            <button type="button" onclick="filterByStatus('Available')" class="status-filter-btn px-6 py-2 text-xs font-bold rounded-full transition-all text-gray-400 hover:text-gray-900" data-status="Available">Approved</button>
+            <button type="button" onclick="filterByStatus('Pending')" class="status-filter-btn px-6 py-2 text-xs font-bold rounded-full transition-all text-gray-400 hover:text-gray-900" data-status="Pending">Pending</button>
+            <button type="button" onclick="filterByStatus('Adopted')" class="status-filter-btn px-6 py-2 text-xs font-bold rounded-full transition-all text-gray-400 hover:text-gray-900" data-status="Adopted">Rejected</button>
+        </div>
+    </div>
+
+    <div id="petGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @foreach (var pet in Model)
+        {
+            <div class="pet-card relative group aspect-[3/4] rounded-[40px] overflow-hidden shadow-sm border border-gray-50 bg-white"
+                 data-name="@pet.Name.ToLower()" data-breed="@pet.Breed.ToLower()" data-status="@pet.Status">
+                
+                <img src="@pet.ImageUrl" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="@pet.Name" />
+                
+                <div class="absolute top-5 right-5">
+                    <span class="text-[10px] font-black px-4 py-1.5 rounded-full text-white uppercase tracking-widest @(pet.Status == "Available" ? "bg-[#50B442]" : "bg-[#FFB347]")" data-pet-status>
+                        @pet.Status
+                    </span>
+                </div>
+
+                <div class="absolute inset-x-0 bottom-0 p-8 pt-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                    <div class="flex justify-between items-end">
+                        <div class="text-white">
+                            <h3 class="text-3xl font-black mb-1" style="font-family: 'Lilita One', cursive;">@pet.Name</h3>
+                            <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest mb-2">@pet.Breed • @pet.Age • @pet.Gender</p>
+                            <div class="flex items-center gap-2 opacity-70">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                                <span class="text-[10px] font-bold uppercase tracking-tight">@pet.Location</span>
+                            </div>
+                        </div>
+
+                        <div class="relative dropdown-container">
+                            <button class="dropdown-trigger text-white/80 hover:text-white transition-colors p-2">
+                                <i data-lucide="more-vertical" class="w-6 h-6"></i>
+                            </button>
+                            
+                            <div class="dropdown-menu hidden absolute right-0 bottom-full mb-2 w-40 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-50">
+                                <button onclick="openEditPetModal()" class="w-full flex items-center gap-3 px-4 py-2 text-[10px] font-black text-[#F87004] hover:bg-orange-50 transition-colors uppercase tracking-widest">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    Edit Pet
+                                </button>
+                                <button onclick="deletePet('@pet.Name')" class="w-full flex items-center gap-3 px-4 py-2 text-[10px] font-black text-gray-400 hover:bg-gray-50 transition-colors uppercase tracking-widest">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    Delete Pet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<partial name="_AddPetModal" model="new PawsAndClaws.Models.AddPetViewModel()" />
+<partial name="_EditPetModal" model="new PawsAndClaws.Models.Pet()" />
+
+<script>
+    let currentStatusFilter = 'All';
+
+    // ==================== MODAL FUNCTIONS ====================
+    function openAddPetModal() {
+        document.getElementById('addPetModal').classList.remove('hidden');
+    }
+
+    function closeAddPetModal() {
+        document.getElementById('addPetModal').classList.add('hidden');
+    }
+
+    function openEditPetModal() {
+        document.getElementById('editPetModal').classList.remove('hidden');
+    }
+
+    function closeEditPetModal() {
+        document.getElementById('editPetModal').classList.add('hidden');
+    }
+
+    // ==================== DELETE PET ====================
+    function deletePet(petName) {
+        if (confirm('Are you sure you want to delete ' + petName + '?')) {
+            // TODO: Implement delete functionality
+            console.log('Deleting pet:', petName);
+        }
+    }
+
+    // ==================== FILTER STATUS ====================
+    function filterByStatus(status) {
+        const statusMap = {
+            'Rejected': 'Adopted'
+        };
+        const actualStatus = statusMap[status] || status;
+        currentStatusFilter = actualStatus;
+        
+        // Update button states
+        document.querySelectorAll('.status-filter-btn').forEach(btn => {
+            if (btn.getAttribute('data-status') === actualStatus) {
+                btn.classList.remove('text-gray-600', 'hover:text-gray-900', 'text-gray-400');
+                btn.classList.add('bg-white', 'text-gray-900', 'shadow-sm', 'font-black');
+            } else {
+                btn.classList.add('text-gray-400', 'hover:text-gray-900', 'font-bold');
+                btn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm', 'font-black');
+            }
+        });
+        
+        filterPets();
+    }
+
+    // ==================== FILTER AND SEARCH ====================
+    function filterPets() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const petCards = document.querySelectorAll('.pet-card');
+        let visibleCount = 0;
+
+        petCards.forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const breed = card.getAttribute('data-breed') || '';
+            const status = card.getAttribute('data-status') || '';
+
+            const matchesSearch = name.includes(searchInput) || breed.includes(searchInput);
+            const matchesStatus = currentStatusFilter === 'All' || status === currentStatusFilter;
+
+            if (matchesSearch && matchesStatus) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        document.getElementById('petCount').textContent = visibleCount;
+    }
+
+    // ==================== MODAL CLOSE HANDLERS ====================
+    document.addEventListener('click', function(event) {
+        const addModal = document.getElementById('addPetModal');
+        if (event.target === addModal) {
+            closeAddPetModal();
+        }
+
+        const editModal = document.getElementById('editPetModal');
+        if (event.target === editModal) {
+            closeEditPetModal();
+        }
+    });
+
+    // ==================== DROPDOWN MENU LOGIC ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
+        
+        dropdownTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const menu = this.nextElementSibling;
+                
+                // Close all other menus
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    if (m !== menu) m.classList.add('hidden');
+                });
+                
+                menu.classList.toggle('hidden');
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    m.classList.add('hidden');
+                });
+            }
+        });
+    });
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>

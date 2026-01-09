@@ -22,7 +22,9 @@
 
 @if (!string.IsNullOrEmpty(Model.Href))
 {
-    <a id="@Model.Id" href="@Model.Href" class="@combinedClasses">
+    <a id="@Model.Id" href="@Model.Href" 
+       data-modal-target="@Model.DataModalTarget" 
+       class="@combinedClasses">
         <span class="btn-text">@Model.Text</span>
         @if (!string.IsNullOrEmpty(Model.Icon))
         {
@@ -32,7 +34,9 @@
 }
 else
 {
-    <button id="@Model.Id" type="@Model.Type" class="@combinedClasses">
+    <button id="@Model.Id" type="@Model.Type" 
+            data-modal-target="@Model.DataModalTarget" 
+            class="@combinedClasses">
         <span class="btn-text">@Model.Text</span>
         @if (!string.IsNullOrEmpty(Model.Icon))
         {

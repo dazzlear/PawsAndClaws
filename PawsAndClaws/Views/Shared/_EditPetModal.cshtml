@@ -1,0 +1,177 @@
+@model Pet
+
+<!-- Edit Pet Modal -->
+<div id="editPetModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-100 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-8 border-b border-gray-100 flex-shrink-0">
+            <h2 class="text-2xl font-black text-gray-900" style="font-family: 'Lilita One';">Edit Pet</h2>
+            <button onclick="closeEditPetModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        @* SCROLLABLE FORM AREA *@
+        <form id="editPetForm" asp-controller="Pet" asp-action="EditPet" method="post" enctype="multipart/form-data" 
+              class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pr-6 mr-2">
+            
+            @* Pet Photo Upload *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Photo</label>
+                <div class="relative">
+                    <input type="file" name="Photo" accept="image/*" id="editPhotoInput"
+                           class="hidden" onchange="previewEditPhoto(event)">
+                    <button type="button" onclick="document.getElementById('editPhotoInput').click()"
+                            class="w-full px-6 py-12 border-2 border-dashed border-orange-200 rounded-2xl hover:border-orange-400 transition cursor-pointer flex flex-col items-center justify-center space-y-2 bg-orange-50/50">
+                        <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-orange-600">Upload Photo</span>
+                    </button>
+                    <img id="editPhotoPreview" src="" alt="Preview" class="hidden w-full h-32 object-cover rounded-2xl mt-2">
+                </div>
+            </div>
+
+            @* Name Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Name</label>
+                <input type="text" name="Name" value="@Model.Name" placeholder="Pet name" 
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium">
+            </div>
+
+            @* Breed Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+                <input type="text" name="Breed" value="@Model.Breed" placeholder="Breed" 
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium">
+            </div>
+
+            @* Age Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age</label>
+                <input type="number" name="Age" value="@Model.Age" placeholder="Age in years" 
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium">
+            </div>
+
+            @* Gender and Species Grid *@
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Gender</label>
+                    <select name="Gender" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        @if (Model.Gender == "Male")
+                        {
+                            <option value="Male" selected>Male</option>
+                            <option value="Female">Female</option>
+                        }
+                        else
+                        {
+                            <option value="Male">Male</option>
+                            <option value="Female" selected>Female</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="space-y-2 col-span-2 md:col-span-1">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species</label>
+                    <select name="Species" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        @if (Model.Species == "Dog")
+                        {
+                            <option value="Dog" selected>Dog</option>
+                            <option value="Cat">Cat</option>
+                        }
+                        else
+                        {
+                            <option value="Dog">Dog</option>
+                            <option value="Cat" selected>Cat</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @* Size and Location Grid *@
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Size</label>
+                    <input type="text" name="Size" value="@Model.Size" placeholder="Small, Medium, Large" 
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Location</label>
+                    <input type="text" name="Location" value="@Model.Location" placeholder="Shelter location" 
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium">
+                </div>
+            </div>
+
+            @* Description Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Description</label>
+                <textarea name="Description" placeholder="Describe the pet..." 
+                          class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium resize-none"
+                          rows="4">@Model.Description</textarea>
+            </div>
+        </form>
+
+        <!-- Modal Footer (Sticky) -->
+        <div class="flex justify-end gap-3 p-8 border-t border-gray-100 flex-shrink-0 bg-gray-50">
+            <button type="button" onclick="closeEditPetModal()"
+                    class="px-8 py-3 text-gray-700 font-semibold rounded-full border border-gray-300 hover:bg-gray-100 transition">
+                Cancel
+            </button>
+            <button type="submit" form="editPetForm"
+                    class="px-8 py-3 bg-[#F87004] text-white font-semibold rounded-full hover:bg-orange-600 transition">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Scrollbar Styles -->
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+</style>
+
+<!-- JavaScript Functions -->
+<script>
+    function openEditPetModal() {
+        document.getElementById('editPetModal').classList.remove('hidden');
+    }
+
+    function closeEditPetModal() {
+        document.getElementById('editPetModal').classList.add('hidden');
+    }
+
+    function previewEditPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('editPhotoPreview').src = e.target.result;
+                document.getElementById('editPhotoPreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('editPetModal');
+        if (event.target === modal) {
+            closeEditPetModal();
+        }
+    });
+</script>
