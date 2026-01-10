@@ -95,6 +95,42 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addPetForm = document.querySelector('form[asp-controller="Pet"][asp-action="AddPet"]');
+            
+            if (addPetForm) {
+                addPetForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    // Show confirmation
+                    ModalManager.confirm(
+                        "List this pet?",
+                        "Are you sure you want to add this pet to your inventory? You can edit the details later.",
+                        "LIST PET",
+                        "CANCEL",
+                        () => {
+                            // Show success message
+                            ModalManager.show(
+                                "Pet added successfully!",
+                                "Your new pet has been added to the inventory and is now available for adoption.",
+                                "GREAT",
+                                () => {
+                                    addPetForm.submit();
+                                }
+                            );
+                        },
+                        () => {
+                            // Do nothing if cancelled
+                        }
+                    );
+                });
+            }
+        });
+    </script>
+}
+
 <style>
     /* Styling for the internal scrollbar */
     .custom-scrollbar::-webkit-scrollbar {

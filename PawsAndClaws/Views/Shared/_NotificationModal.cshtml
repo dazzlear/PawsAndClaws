@@ -1,0 +1,31 @@
+@* Modular Notification Modal Component *@
+@* This component can be placed once in your _Layout.cshtml *@
+<div id="notificationModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4">
+    @* 1. THE OVERLAY: Darkened background with blur *@
+    <div class="absolute inset-0 bg-[#2D2D2D]/60 backdrop-blur-sm transition-opacity"></div>
+
+    @* 2. THE MODAL CARD: Responsive rounded container *@
+    <div class="relative bg-white rounded-[45px] w-full max-w-2xl shadow-2xl p-10 md:p-14 animate-in fade-in zoom-in duration-300">
+        
+        @* Dynamic Header Section *@
+        <div class="mb-6">
+            <h2 id="modalTitle" class="text-4xl md:text-4xl font-black text-[#2D2D2D] leading-tight">
+                @* Content injected via JS *@
+            </h2>
+        </div>
+
+        @* Dynamic Body Section *@
+        <div class="mb-10">
+            <p id="modalDescription" class="text-gray-500 font-medium text-lg leading-relaxed">
+                @* Content injected via JS *@
+            </p>
+        </div>
+
+        @* Action Buttons Container: Supports single or dual button layouts *@
+        <div id="modalActionContainer" class="flex justify-end gap-4">
+            <button id="modalActionBtn" class="bg-[#F87004] text-white px-10 py-3.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-[1.03] active:scale-[0.98] transition-all">
+                OKAY
+            </button>
+        </div>
+    </div>
+</div>

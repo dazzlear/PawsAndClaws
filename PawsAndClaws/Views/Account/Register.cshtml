@@ -19,7 +19,7 @@
 
 <div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full">
     
-    <form asp-action="Register" method="post" class="w-full space-y-5">
+    <form asp-action="Register" method="post" id="registerForm" class="w-full space-y-5">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="relative flex-1">
                         <i data-lucide="user" class="absolute left-4 top-3.5 w-5 h-5 text-orange-300"></i>
@@ -59,3 +59,73 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            
+            if (registerForm) {
+                registerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const firstName = registerForm.querySelector('[name="FirstName"]').value.trim();
+                    const lastName = registerForm.querySelector('[name="LastName"]').value.trim();
+                    const email = registerForm.querySelector('[name="Email"]').value.trim();
+                    const password = registerForm.querySelector('[name="Password"]').value;
+                    const confirmPassword = registerForm.querySelector('[name="ConfirmPassword"]').value;
+                    
+                    // Basic validation
+                    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                        ModalManager.show(
+                            "All fields required",
+                            "Please fill in all the fields to continue with your registration.",
+                            "GOT IT"
+                        );
+                        return;
+                    }
+                    
+                    if (password !== confirmPassword) {
+                        ModalManager.show(
+                            "Passwords don't match",
+                            "Make sure both password fields are identical.",
+                            "TRY AGAIN"
+                        );
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        ModalManager.show(
+                            "Password too short",
+                            "Your password should be at least 6 characters long.",
+                            "GOT IT"
+                        );
+                        return;
+                    }
+                    
+                    // Show confirmation
+                    ModalManager.confirm(
+                        "Ready to join?",
+                        `Welcome, ${firstName}! You're one step away from finding your perfect pet companion.`,
+                        "CREATE ACCOUNT",
+                        "EDIT",
+                        () => {
+                            // Show success message
+                            ModalManager.show(
+                                "Account created!",
+                                "Welcome to Paws & Claws! Let's find your perfect pet friend.",
+                                "GET STARTED",
+                                () => {
+                                    registerForm.submit();
+                                }
+                            );
+                        },
+                        () => {
+                            // Do nothing if they choose to edit
+                        }
+                    );
+                });
+            }
+        });
+    </script>
+}

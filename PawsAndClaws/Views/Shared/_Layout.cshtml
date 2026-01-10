@@ -120,8 +120,13 @@
         @RenderBody()
     </main>
 
+    @* Notification Modal Component *@
+    @await Html.PartialAsync("_NotificationModal")
+
     @* Scripts *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/modal-manager.js" asp-append-version="true"></script>
+    <script src="~/js/modal-utilities.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>

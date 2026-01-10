@@ -141,18 +141,53 @@
                         textarea.focus();
                     } else {
                         if (textarea.value.trim().length < 20) {
-                            alert('Please provide a bit more detail!');
+                            // Show modal for insufficient detail
+                            ModalManager.show(
+                                "Tell us more!",
+                                "Please provide at least 20 characters about why you'd be a great match for @Model.Name.",
+                                "GOT IT"
+                            );
                             return;
                         }
-                        alert('Application submitted!');
-                        window.location.href = '@Url.Action("Index", "Home")';
+                        // Show confirmation modal before submission
+                        ModalManager.confirm(
+                            "Ready to apply?",
+                            "Your application for @Model.Name will be submitted to our team for review. You'll receive updates on your status within 2-3 business days.",
+                            "SUBMIT",
+                            "CANCEL",
+                            () => {
+                                // On confirm
+                                ModalManager.show(
+                                    "Application submitted!",
+                                    "Thank you for your interest in adopting @Model.Name! Our team will review your application and get back to you soon.",
+                                    "VIEW MY APPLICATIONS",
+                                    () => {
+                                        window.location.href = '@Url.Action("MyApplications", "Adoption")';
+                                    }
+                                );
+                            },
+                            () => {
+                                // On cancel - do nothing, user stays on page
+                            }
+                        );
                     }
                 });
             }
 
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', function() {
-                    showDescription();
+                    ModalManager.confirm(
+                        "Cancel application?",
+                        "Are you sure you want to cancel? Any information you've entered will be lost.",
+                        "CANCEL APPLICATION",
+                        "KEEP EDITING",
+                        () => {
+                            showDescription();
+                        },
+                        () => {
+                            // Do nothing if they choose to keep editing
+                        }
+                    );
                 });
             }
         });

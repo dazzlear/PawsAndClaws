@@ -95,3 +95,50 @@
         background: #56C2B1; /* Brand teal on hover */
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const editProfileForm = document.getElementById('editProfileForm');
+        
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const firstName = editProfileForm.querySelector('[name="FirstName"]').value.trim();
+                const lastName = editProfileForm.querySelector('[name="LastName"]').value.trim();
+                const email = editProfileForm.querySelector('[name="Email"]').value.trim();
+                
+                if (!firstName || !lastName || !email) {
+                    ModalManager.show(
+                        "Required fields",
+                        "Please fill in all required fields before saving.",
+                        "GOT IT"
+                    );
+                    return;
+                }
+                
+                // Show confirmation
+                ModalManager.confirm(
+                    "Save changes?",
+                    "Your profile information will be updated. Make sure everything is correct.",
+                    "SAVE",
+                    "CANCEL",
+                    () => {
+                        // Show success message
+                        ModalManager.show(
+                            "Profile updated!",
+                            "Your profile has been saved successfully.",
+                            "OKAY",
+                            () => {
+                                editProfileForm.submit();
+                            }
+                        );
+                    },
+                    () => {
+                        // Do nothing if cancelled
+                    }
+                );
+            });
+        }
+    });
+</script>

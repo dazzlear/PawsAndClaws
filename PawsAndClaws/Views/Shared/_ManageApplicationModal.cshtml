@@ -186,5 +186,47 @@
                 if (window.lucide) lucide.createIcons();
             });
         });
+
+        // Handle form submission with confirmation
+        const manageForm = document.querySelector('form[asp-controller="Adoption"][asp-action="UpdateApplicationStatus"]');
+        if (manageForm) {
+            const originalSubmit = manageForm.onsubmit;
+            manageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const selectedStatus = document.getElementById('selectedStatusInput').value;
+                const selectedStage = document.getElementById('selectedStageInput').value;
+                
+                let statusMessage = '';
+                if (selectedStatus === 'Rejected') {
+                    statusMessage = 'This application will be marked as REJECTED.';
+                } else if (selectedStatus === 'Pending') {
+                    statusMessage = `This application will move to stage ${selectedStage}.`;
+                } else if (selectedStatus === 'Review') {
+                    statusMessage = 'This application will be put back in REVIEW.';
+                }
+
+                ModalManager.confirm(
+                    "Update application?",
+                    statusMessage + " This action cannot be undone immediately.",
+                    "UPDATE",
+                    "CANCEL",
+                    () => {
+                        // Show success message
+                        ModalManager.show(
+                            "Updated!",
+                            "The application status has been updated successfully.",
+                            "OKAY",
+                            () => {
+                                manageForm.submit();
+                            }
+                        );
+                    },
+                    () => {
+                        // Do nothing if cancelled
+                    }
+                );
+            });
+        }
     });
 </script>

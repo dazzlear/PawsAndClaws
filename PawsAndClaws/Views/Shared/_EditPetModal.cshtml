@@ -146,6 +146,38 @@
         }
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+        const editPetForm = document.getElementById('editPetForm');
+        
+        if (editPetForm) {
+            editPetForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Show confirmation
+                ModalManager.confirm(
+                    "Save changes?",
+                    "You're about to update @Model.Name's information. These changes will be visible to potential adopters.",
+                    "SAVE CHANGES",
+                    "KEEP EDITING",
+                    () => {
+                        // Show success message
+                        ModalManager.show(
+                            "Changes saved!",
+                            "@Model.Name's profile has been updated successfully.",
+                            "OKAY",
+                            () => {
+                                editPetForm.submit();
+                            }
+                        );
+                    },
+                    () => {
+                        // Do nothing if they keep editing
+                    }
+                );
+            });
+        }
+    });
+
     // Close modal on backdrop click
     document.addEventListener('click', function(event) {
         const modal = document.getElementById('editPetModal');
@@ -154,3 +186,4 @@
         }
     });
 </script>
+
