@@ -1,0 +1,144 @@
+@model UserProfileViewModel
+
+<div id="editProfileModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    @* Main Modal Container: max-h-[90vh] ensures it stays off the screen edges *@
+    <div class="bg-white rounded-[40px] w-full max-w-lg shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+        
+        <div class="p-8 pb-4 flex justify-between items-center shrink-0 border-b border-gray-50/50">
+            <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                Edit <span class="text-[#56C2B1]">Profile</span>
+            </h2>
+            <button id="closeEditModal" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        @* SCROLLABLE CONTENT AREA: 
+           The 'pr-4' creates space so the scrollbar doesn't touch the text.
+           The 'custom-scrollbar' class is used for the "inside" styling.
+        *@
+        <form id="editProfileForm" asp-controller="Account" asp-action="UpdateProfile" method="post" enctype="multipart/form-data" 
+              class="flex-1 overflow-y-auto p-8 pt-6 space-y-6 custom-scrollbar pr-6 mr-2">
+            
+            @* 1. Profile Picture Section *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Profile Picture</label>
+                <div onclick="document.getElementById('profilePicInput').click()" 
+                     class="border-2 border-dashed border-gray-100 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 hover:border-[#56C2B1]/50 hover:bg-[#56C2B1]/5 transition-all cursor-pointer group">
+                    <div class="bg-gray-50 p-3 rounded-full group-hover:bg-white transition-colors">
+                        <i data-lucide="upload" class="w-5 h-5 text-gray-400 group-hover:text-[#56C2B1]"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-700">Click to upload image</p>
+                        <p class="text-[9px] text-gray-400 uppercase font-black">PNG, JPG TO 4MB</p>
+                    </div>
+                    <input id="profilePicInput" type="file" name="ProfilePicture" class="hidden" accept="image/*" />
+                </div>
+            </div>
+
+            @* 2. Identity Fields *@
+            <div class="flex gap-4">
+                <div class="flex-1 space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">First Name</label>
+                    <input type="text" asp-for="FirstName" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+                </div>
+                <div class="flex-1 space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Last Name</label>
+                    <input type="text" asp-for="LastName" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+                </div>
+            </div>
+
+            @* 3. Contact & Logistics *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Email Address</label>
+                <input type="email" asp-for="Email" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Full Address</label>
+                <input type="text" asp-for="FullAddress" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Living Situation</label>
+                <select asp-for="LivingSituation" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium appearance-none cursor-pointer">
+                    <option value="">Select Situation</option>
+                    <option value="House">House</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Barn">Barn</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="p-8 pt-4 border-t border-gray-50 shrink-0">
+            <button type="submit" form="editProfileForm" class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Save Changes
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styling to make the scrollbar appear "inside" the form and match the brand colors */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E5E7EB; /* Light gray to blend with design */
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #56C2B1; /* Brand teal on hover */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const editProfileForm = document.getElementById('editProfileForm');
+        
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const firstName = editProfileForm.querySelector('[name="FirstName"]').value.trim();
+                const lastName = editProfileForm.querySelector('[name="LastName"]').value.trim();
+                const email = editProfileForm.querySelector('[name="Email"]').value.trim();
+                
+                if (!firstName || !lastName || !email) {
+                    ModalManager.show(
+                        "Required fields",
+                        "Please fill in all required fields before saving.",
+                        "GOT IT"
+                    );
+                    return;
+                }
+                
+                // Show confirmation
+                ModalManager.confirm(
+                    "Save changes?",
+                    "Your profile information will be updated. Make sure everything is correct.",
+                    "SAVE",
+                    "CANCEL",
+                    () => {
+                        // Show success message
+                        ModalManager.show(
+                            "Profile updated!",
+                            "Your profile has been saved successfully.",
+                            "OKAY",
+                            () => {
+                                editProfileForm.submit();
+                            }
+                        );
+                    },
+                    () => {
+                        // Do nothing if cancelled
+                    }
+                );
+            });
+        }
+    });
+</script>

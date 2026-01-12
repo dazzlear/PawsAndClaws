@@ -96,7 +96,66 @@ namespace PawsAndClaws.Controllers
         [HttpGet]
         public IActionResult Profile()
         {
-            return View();
+            // Try to get updated profile from TempData if available
+            var profileJson = TempData["UserProfile"] as string;
+            if (!string.IsNullOrEmpty(profileJson))
+            {
+                TempData.Keep("UserProfile");
+                var savedModel = JsonSerializer.Deserialize<UserProfileViewModel>(profileJson);
+                return View(savedModel);
+            }
+
+            // Fallback to Mock data based on the provided image
+            var model = new UserProfileViewModel
+            {
+                FirstName = "Regine",
+                LastName = "Velasquez",
+                FullName = "Regine Velasquez",
+                Email = "RegineVelasquezSample@gmail.com",
+                LivingSituation = "Apartment",
+                FullAddress = "RCBC Plaza, 55 Gil Puyat Avenue, Makati City, Metro Manila 1200, Philippines",
+                ProfilePictureUrl = "/images/profile-placeholder.jpg",
+                CurrentPetCount = 2
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile(UserProfileViewModel model, IFormFile? ProfilePicture)
+        {
+            if (ModelState.IsValid)
+            {
+                // Update FullName based on FirstName and LastName
+                model.FullName = $"{model.FirstName} {model.LastName}";
+
+                // Handle file upload if a new profile picture is provided
+                if (ProfilePicture != null && ProfilePicture.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                    
+                    // Ensure directory exists
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        ProfilePicture.CopyTo(fileStream);
+                    }
+
+                    model.ProfilePictureUrl = $"/images/{uniqueFileName}";
+                }
+
+                // Persist the updated profile in TempData (Mocking a DB save)
+                TempData["UserProfile"] = JsonSerializer.Serialize(model);
+
+                return RedirectToAction("Profile");
+            }
+
+            // If the model state is invalid, return to the profile page
+            return RedirectToAction("Profile");
         }
 
         // REGISTER (TempData Wizard)
@@ -371,10 +430,6 @@ namespace PawsAndClaws.Controllers
             TempData.Remove("UserHome");
 
             return RedirectToAction("Index", "Home");
-
-            TempData["SuccessMessage"] = "Registration complete! Please log in using your account.";
-            return RedirectToAction("Login");
-
         }
 
         // -------------------------

@@ -1,8 +1,141 @@
+@model UserProfileViewModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "My Profile";
 }
 
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">My Profile</h1>
-    <p class="text-gray-600">This is your profile page. Content coming soon!</p>
+<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] py-12 px-4 flex flex-col items-center">
+    
+    @* Page Header - Uses Lilita One for brand consistency *@
+    <div class="max-w-4xl w-full mb-8">
+        <h1 class="text-5xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+            My <span class="text-[#56C2B1]">Profile</span>
+        </h1>
+    </div>
+
+    @* Main Profile Card - items-stretch ensures the image matches content height *@
+    <div class="bg-white rounded-[40px] shadow-sm border border-gray-50 flex flex-col md:flex-row max-w-4xl w-full overflow-hidden items-stretch">
+        
+        @* Left: Profile Image Container *@
+        <div class="w-full md:w-2/5 relative shrink-0 min-h-[300px] md:min-h-full">
+            <img src="@Model.ProfilePictureUrl" class="absolute inset-0 w-full h-full object-cover" alt="Profile Picture" />
+        </div>
+
+        @* Right: Profile Details Section *@
+        <div class="w-full md:w-3/5 p-10 md:p-14 space-y-10 relative">
+            
+            @* Top Section: Name and Household Badge *@
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                    @Model.FullName
+                </h2>
+                
+                @* Household Stats Badge with Edit Trigger *@
+                <div class="bg-orange-50 border border-orange-100 rounded-full px-4 py-2 flex items-center gap-2 group cursor-pointer hover:bg-orange-100 transition-colors">
+                    <div class="text-center">
+                        <p class="text-[#F87004] text-[10px] font-black leading-none">@Model.CurrentPetCount Current Pets</p>
+                        <p class="text-[#F87004]/60 text-[8px] font-bold uppercase tracking-tighter">My Household</p>
+                    </div>
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#F87004]"></i>
+                </div>
+            </div>
+
+            @* Form Fields Section - Redesigned with Flexbox to fix overlap *@
+            <div class="space-y-10">
+                
+                @* Row 1: Email and Living Situation *@
+                <div class="flex flex-col gap-10">
+                    @* Email Field *@
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Email Address</h3>
+                        <p class="text-gray-700 font-medium text-lg break-all">@Model.Email</p>
+                    </div>
+
+                    @* Living Situation Field *@
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Living Situation</h3>
+                        <p class="text-gray-700 font-medium text-lg">@Model.LivingSituation</p>
+                    </div>
+                </div>
+
+                @* Row 2: Full Address (Full Width) *@
+                <div>
+                    <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Full Address</h3>
+                    <p class="text-gray-700 font-medium text-lg leading-relaxed max-w-lg">@Model.FullAddress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Bottom Actions - Aligned Right *@
+    <div class="max-w-4xl w-full flex justify-end items-center gap-4 mt-8">
+        <div class="w-48">
+            <partial name="_Button" model='new ButtonViewModel { 
+                Text = "EDIT PROFILE", 
+                Variant = "primary", 
+                ClassName = "py-4 shadow-orange-100",
+                DataModalTarget = "edit-profile"
+            }' />
+        </div>
+
+        @* Backend Note: Ensure AccountController has a POST Logout action *@
+        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="w-48 mt-6">
+            <button type="button" id="logoutBtn" class="w-full py-4 rounded-full bg-[#C61E1E] text-white text-sm font-bold uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                LOG-OUT
+            </button>
+        </form>
+    </div>
 </div>
+
+<partial name="_EditProfileModal" model="Model" />
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('editProfileModal');
+            const openBtn = document.querySelector('[data-modal-target="edit-profile"]');
+            const closeBtn = document.getElementById('closeEditModal');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutForm = document.getElementById('logoutForm');
+
+            if (openBtn) {
+                openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            }
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.add('hidden');
+            });
+
+            // Handle logout with confirmation
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    ModalManager.confirm(
+                        "Sign out?",
+                        "Are you sure you want to sign out? You'll need to log in again to access your account.",
+                        "SIGN OUT",
+                        "STAY",
+                        () => {
+                            // Show success message
+                            ModalManager.show(
+                                "See you soon!",
+                                "You've been successfully signed out. We hope to see you back soon!",
+                                "OKAY",
+                                () => {
+                                    // Submit the logout form
+                                    logoutForm.submit();
+                                }
+                            );
+                        },
+                        () => {
+                            // Do nothing if they choose to stay
+                        }
+                    );
+                });
+            }
+        });
+    </script>
+}
