@@ -1,0 +1,155 @@
+@model UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] py-12 px-4 flex flex-col items-center">
+
+    @* Page Header *@
+    <div class="max-w-4xl w-full mb-8">
+        <h1 class="text-5xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+            My <span class="text-[#56C2B1]">Profile</span>
+        </h1>
+
+        @* optional: show success message after saving *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <p class="mt-3 text-sm font-semibold text-[#50B442]">@TempData["SuccessMessage"]</p>
+        }
+    </div>
+
+    @* Main Profile Card *@
+    <div class="bg-white rounded-[40px] shadow-sm border border-gray-50 flex flex-col md:flex-row max-w-4xl w-full overflow-hidden items-stretch">
+
+        @* Left: Profile Image *@
+        <div class="w-full md:w-2/5 relative shrink-0 min-h-[300px] md:min-h-full">
+            <img src="@Url.Content(Model.ProfilePictureUrl ?? "/images/profile-placeholder.jpg")"
+                 class="absolute inset-0 w-full h-full object-cover"
+                 alt="Profile Picture" />
+        </div>
+
+        @* Right: Profile Details *@
+        <div class="w-full md:w-3/5 p-10 md:p-14 space-y-10 relative">
+
+            @* Top Section *@
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                    @Model.FullName
+                </h2>
+
+                @* Household Stats Badge (also opens edit modal) *@
+                <button type="button"
+                        id="openEditProfileModalBtn2"
+                        class="bg-orange-50 border border-orange-100 rounded-full px-4 py-2 flex items-center gap-2 group cursor-pointer hover:bg-orange-100 transition-colors">
+                    <div class="text-center">
+                        <p class="text-[#F87004] text-[10px] font-black leading-none">@Model.CurrentPetCount Current Pets</p>
+                        <p class="text-[#F87004]/60 text-[8px] font-bold uppercase tracking-tighter">My Household</p>
+                    </div>
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#F87004]"></i>
+                </button>
+            </div>
+
+            @* Fields *@
+            <div class="space-y-10">
+                <div class="flex flex-col gap-10">
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Email Address</h3>
+                        <p class="text-gray-700 font-medium text-lg break-all">@Model.Email</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Living Situation</h3>
+                        <p class="text-gray-700 font-medium text-lg">@Model.LivingSituation</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Full Address</h3>
+                    <p class="text-gray-700 font-medium text-lg leading-relaxed max-w-lg">@Model.FullAddress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Bottom Actions *@
+    <div class="max-w-4xl w-full flex justify-end items-center gap-4 mt-8">
+        <div class="w-48">
+            @* ? use Id instead of relying on data-modal-target from _Button *@
+            <partial name="_Button" model='new ButtonViewModel {
+                Id = "openEditProfileModalBtn",
+                Text = "EDIT PROFILE",
+                Variant = "primary",
+                ClassName = "py-4 shadow-orange-100"
+            }' />
+        </div>
+
+        @* ? Logout form MUST have AntiForgeryToken *@
+        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="w-48 mt-6">
+            @Html.AntiForgeryToken()
+            <button type="button" id="logoutBtn"
+                    class="w-full py-4 rounded-full bg-[#C61E1E] text-white text-sm font-bold uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                LOG-OUT
+            </button>
+        </form>
+    </div>
+</div>
+
+<partial name="_EditProfileModal" model="Model" />
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('editProfileModal');
+            const openBtn = document.getElementById('openEditProfileModalBtn');
+            const openBtn2 = document.getElementById('openEditProfileModalBtn2');
+            const closeBtn = document.getElementById('closeEditModal');
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutForm = document.getElementById('logoutForm');
+
+            const openModal = () => {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            };
+
+            const closeModal = () => {
+                if (!modal) return;
+                modal.classList.add('hidden');
+            };
+
+            openBtn?.addEventListener('click', openModal);
+            openBtn2?.addEventListener('click', openModal);
+            closeBtn?.addEventListener('click', closeModal);
+
+            // Close modal on backdrop click
+            modal?.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // Close modal on ESC
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            // Logout confirmation
+            logoutBtn?.addEventListener('click', () => {
+                ModalManager.confirm(
+                    "Sign out?",
+                    "Are you sure you want to sign out? You'll need to log in again to access your account.",
+                    "SIGN OUT",
+                    "STAY",
+                    () => {
+                        ModalManager.show(
+                            "See you soon!",
+                            "You've been successfully signed out. We hope to see you back soon!",
+                            "OKAY",
+                            () => logoutForm.submit()
+                        );
+                    },
+                    () => {}
+                );
+            });
+        });
+    </script>
+}

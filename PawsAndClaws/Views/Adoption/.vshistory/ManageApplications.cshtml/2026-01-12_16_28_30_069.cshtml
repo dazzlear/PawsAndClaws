@@ -1,0 +1,131 @@
+@model PawsAndClaws.Models.ViewModels.ApplicationPageViewModel
+
+@{
+    ViewData["Title"] = "Manage Applications";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header Section -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-black text-[#2D2D2D] mb-2" style="font-family: 'Lilita One', cursive;">
+            <span class="text-[#F87004]">Applications</span> <span class="text-[#56C2B1]">Management</span>
+        </h1>
+        <p class="text-gray-600 font-medium">Review and process adoption requests from users.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-8">
+        <div class="relative">
+            <i data-lucide="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input type="text" 
+                   id="searchApplications"
+                   placeholder="Search name or breed..." 
+                   class="w-full pl-12 pr-6 py-4 bg-gray-50 border border-gray-200 rounded-full text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#56C2B1]/20 focus:border-[#56C2B1] transition-all" />
+        </div>
+    </div>
+
+    <!-- Filter Section with Count -->
+    <div class="mb-8 flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-2">
+            <h3 class="text-lg font-bold text-[#2D2D2D]">All Pets</h3>
+            <span class="bg-[#F87004] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
+                @Model.StatusCounts["All"]
+            </span>
+        </div>
+
+        <!-- Filter Group Component -->
+        <partial name="_ApplicationFilter" model="Model.StatusCounts" />
+    </div>
+
+    <!-- Applications Table -->
+    <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Applicant</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Applying For</th>
+                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                    <th class="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-widest">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Applications.Any())
+                {
+                    @foreach (var app in Model.Applications)
+                    {
+                        var isAdopted = app.Status == "APPROVED";
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                            <!-- Applicant Column -->
+                            <td class="px-6 py-5">
+                                <p class="text-sm font-bold text-[#2D2D2D]">@app.ApplicantName</p>
+                            </td>
+
+                            <!-- Applying For Column -->
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <img src="@app.ImageUrl" alt="@app.PetName" class="w-10 h-10 rounded-full object-cover" />
+                                    <div>
+                                        <p class="text-sm font-bold text-[#2D2D2D]">@app.PetName</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Status Column with Badge Component -->
+                            <td class="px-6 py-5">
+                                @{
+                                    var badgeVariant = app.Status switch
+                                    {
+                                        "PENDING" => "warning",
+                                        "APPROVED" => "secondary",
+                                        "REJECTED" => "danger",
+                                        _ => "secondary"
+                                    };
+                                }
+                                <partial name="_Badge" model="new BadgeViewModel { Text = app.Status, Variant = badgeVariant }" />
+                            </td>
+
+                            <!-- Action Column with Button Component -->
+                            <td class="px-6 py-5 text-right">
+                                @{
+                                    var buttonVariant = isAdopted ? "secondary" : "primary";
+                                    var buttonText = isAdopted ? "Manage" : "Manage";
+                                }
+                                <button type="button" 
+                                        onclick="openManageApplicationModal()"
+                                        class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all @(isAdopted ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-60" : "bg-gradient-to-r from-[#F87004] to-[#FFB347] text-white shadow-md shadow-orange-100 hover:scale-[1.02] active:scale-[0.98]") @(isAdopted ? "" : "")">
+                                    @buttonText
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center">
+                            <p class="text-gray-400 text-sm">No applications found for this filter.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* Manage Application Modal - Show first application as default *@
+@if (Model.Applications.Any())
+{
+    <partial name="_ManageApplicationModal" model="Model.Applications.First()" />
+}
+
+@section Scripts {
+    <script>
+        function openManageApplicationModal() {
+            const modal = document.getElementById('manageApplicationModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+    </script>
+}

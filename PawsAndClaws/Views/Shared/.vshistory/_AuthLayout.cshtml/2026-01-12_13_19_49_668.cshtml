@@ -1,0 +1,19 @@
+@{
+    Layout = "_Layout";
+}
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+
+@section Styles {
+    @RenderSection("Styles", required: false)
+}
+
+<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] flex flex-col items-center justify-center py-12 px-4 font-sans relative overflow-x-hidden">
+    @RenderSection("AuthImages", required: false)
+
+    <div class="z-10 w-full max-w-xl">
+        @RenderBody()
+    </div>
+</div>
