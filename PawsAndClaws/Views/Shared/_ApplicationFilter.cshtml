@@ -8,7 +8,7 @@
 <div class="flex bg-gray-100/50 p-1.5 rounded-full border border-gray-100">
     @foreach (var filter in Model) {
         <a asp-controller="@controller" asp-action="@action" asp-route-status="@filter.Key" 
-           class="px-6 py-2 text-xs font-bold rounded-full transition-all no-underline flex items-center gap-2 @(filter.Key == currentFilter ? "bg-[#F87004] text-white shadow-sm text-gray-900" : "text-gray-400 hover:text-gray-600")">
+           class="px-6 py-2 text-xs font-bold rounded-full transition-all no-underline flex items-center gap-2 @(filter.Key == currentFilter ? "bg-[#F87004] text-white shadow-sm" : "text-gray-400 hover:text-gray-600")">
             @filter.Key
             <span class="text-[10px] opacity-70">(@filter.Value)</span>
         </a>

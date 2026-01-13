@@ -105,6 +105,9 @@ namespace PawsAndClaws.Controllers
                     string.Equals(a.Status, status, StringComparison.OrdinalIgnoreCase));
             }
 
+            // Set the current filter for the view
+            ViewData["CurrentFilter"] = status;
+
             var vm = new ApplicationPageViewModel
             {
                 UserName = GetDisplayName(user),
