@@ -6,6 +6,6 @@
     }
   },
   "ConnectionStrings": {
-    "PawsAndClaws": "Server=localhost,1433;Database=PawsAndClawsDb;User Id=sa;TrustServerCertificate=True;Encrypt=True;"
+    "PawsAndClaws": "Server=WOLF-0103\\SQLEXPRESS;Database=PawsAndClawsDb;Trusted_Connection=True;TrustServerCertificate=True;"
   }
 }

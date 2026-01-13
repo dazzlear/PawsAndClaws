@@ -1,0 +1,11 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "PawsAndClaws": "Server=localhost,1433;Database=PawsAndClawsDb;User Id=sa;Password=YourStrong!Passw0rd123;TrustServerCertificate=True;Encrypt=True;"
+  }
+}
