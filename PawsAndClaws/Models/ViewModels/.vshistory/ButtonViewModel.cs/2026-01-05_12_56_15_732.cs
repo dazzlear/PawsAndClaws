@@ -9,6 +9,5 @@ namespace PawsAndClaws.Models
         public string ClassName { get; set; } = string.Empty;
         public string Type { get; set; } = "button";
         public string? Id { get; set; }
-        public string? DataModalTarget { get; set; }
     }
 }

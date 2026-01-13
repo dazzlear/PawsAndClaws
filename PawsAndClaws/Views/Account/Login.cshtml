@@ -19,7 +19,7 @@
 <partial name="_AuthHeader" model='("Your friend", "awaits", "Find your fur-ever bestfriend.", (int?)null)' />
 
 <div class="bg-white rounded-[40px] shadow-sm p-8 md:p-12 w-full">
-    <form asp-controller="Account" asp-action="Login" method="post" id="loginForm" class="w-full space-y-5">
+    <form asp-controller="Account" asp-action="Login" method="post" class="w-full space-y-5">
         @Html.AntiForgeryToken()
 
         <div class="relative">
@@ -70,7 +70,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             const toggleButton = document.querySelector('#togglePassword');
             const passwordInput = document.querySelector('#passwordInput');
-            const loginForm = document.getElementById('loginForm');
 
             if (!toggleButton || !passwordInput) return;
 
@@ -85,40 +84,6 @@
                     window.lucide.createIcons();
                 }
             });
-
-            // Handle login form submission
-            if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    
-                    const email = loginForm.querySelector('[name="Email"]').value.trim();
-                    const password = loginForm.querySelector('[name="Password"]').value;
-                    
-                    if (!email || !password) {
-                        ModalManager.show(
-                            "Missing credentials",
-                            "Please enter both your email and password to log in.",
-                            "GOT IT"
-                        );
-                        return;
-                    }
-                    
-                    // Show loading confirmation
-                    ModalManager.show(
-                        "Signing in...",
-                        `Verifying your credentials. Welcome back!`,
-                        "WAIT",
-                        () => {
-                            loginForm.submit();
-                        }
-                    );
-                    
-                    // Submit after a brief delay to show the message
-                    setTimeout(() => {
-                        loginForm.submit();
-                    }, 500);
-                });
-            }
         });
     </script>
 }

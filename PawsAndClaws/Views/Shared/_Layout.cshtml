@@ -35,55 +35,34 @@
                     {
                         var controller = ViewContext.RouteData.Values["controller"]?.ToString();
                         var action = ViewContext.RouteData.Values["action"]?.ToString();
-                        bool isAdmin = User.IsInRole("Admin");
                         
                         bool isHomeActive = controller == "Home";
                         bool isApplicationsActive = controller == "Adoption";
                         bool isProfileActive = controller == "Account" && action == "Profile";
-                        bool isPetActive = controller == "Pet";
 
-                        @* LOGGED IN: Pill-shaped navigation *@
+                        @* LOGGED IN: Pill-shaped navigation - Matches image_f39da9.png *@
                         <div class="flex items-center bg-[#F8F9FA] border border-gray-100 rounded-full p-1.5 gap-1 shadow-inner">
                             
-                            @if (isAdmin)
-                            {
-                                @* ADMIN VIEW: All Pets *@
-                                <a asp-controller="Pet" asp-action="Inventory" 
-                                   class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isPetActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
-                                    <i data-lucide="paw-print" class="w-4 h-4 @(isPetActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
-                                    <span class="text-xs font-bold uppercase tracking-widest @(isPetActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">All Pets</span>
-                                </a>
+                            @* Home *@
+                            <a asp-controller="Home" asp-action="Index" 
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isHomeActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="home" class="w-4 h-4 @(isHomeActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isHomeActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Home</span>
+                            </a>
 
-                                @* ADMIN VIEW: Manage Applications *@
-                                <a asp-controller="Adoption" asp-action="ManageApplications" 
-                                   class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isApplicationsActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
-                                    <i data-lucide="clipboard-check" class="w-4 h-4 @(isApplicationsActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
-                                    <span class="text-xs font-bold uppercase tracking-widest @(isApplicationsActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Manage Applications</span>
-                                </a>
-                            }
-                            else
-                            {
-                                @* USER VIEW: Home *@
-                                <a asp-controller="Home" asp-action="Index" 
-                                   class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isHomeActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
-                                    <i data-lucide="home" class="w-4 h-4 @(isHomeActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
-                                    <span class="text-xs font-bold uppercase tracking-widest @(isHomeActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Home</span>
-                                </a>
+                            @* Applications *@
+                            <a asp-controller="Adoption" asp-action="MyApplications" 
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isApplicationsActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="clipboard-list" class="w-4 h-4 @(isApplicationsActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isApplicationsActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Applications</span>
+                            </a>
 
-                                @* USER VIEW: My Applications *@
-                                <a asp-controller="Adoption" asp-action="MyApplications" 
-                                   class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isApplicationsActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
-                                    <i data-lucide="clipboard-list" class="w-4 h-4 @(isApplicationsActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
-                                    <span class="text-xs font-bold uppercase tracking-widest @(isApplicationsActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Applications</span>
-                                </a>
-
-                                @* USER VIEW: Profile *@
-                                <a asp-controller="Account" asp-action="Profile" 
-                                   class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isProfileActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
-                                    <i data-lucide="user-circle" class="w-4 h-4 @(isProfileActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
-                                    <span class="text-xs font-bold uppercase tracking-widest @(isProfileActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Profile</span>
-                                </a>
-                            }
+                            @* Profile *@
+                            <a asp-controller="Account" asp-action="Profile" 
+                               class="flex items-center gap-2 px-5 py-2 rounded-full transition-all no-underline @(isProfileActive ? "bg-white shadow-sm border border-gray-50" : "hover:bg-white/60 group")">
+                                <i data-lucide="user-circle" class="w-4 h-4 @(isProfileActive ? "text-[#F87004]" : "text-gray-300 group-hover:text-[#F87004]")"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest @(isProfileActive ? "text-[#F87004]" : "text-gray-400 group-hover:text-gray-600")">Profile</span>
+                            </a>
                         </div>
 
                         @* Vertical Divider *@
@@ -120,13 +99,8 @@
         @RenderBody()
     </main>
 
-    @* Notification Modal Component *@
-    @await Html.PartialAsync("_NotificationModal")
-
     @* Scripts *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/modal-manager.js" asp-append-version="true"></script>
-    <script src="~/js/modal-utilities.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>

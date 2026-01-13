@@ -183,18 +183,7 @@
 
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', function() {
-                    ModalManager.confirm(
-                        "Cancel application?",
-                        "Are you sure you want to cancel? Any information you've entered will be lost.",
-                        "CANCEL APPLICATION",
-                        "KEEP EDITING",
-                        () => {
-                            showDescription();
-                        },
-                        () => {
-                            // Do nothing if they choose to keep editing
-                        }
-                    );
+                    showDescription();
                 });
             }
         });
