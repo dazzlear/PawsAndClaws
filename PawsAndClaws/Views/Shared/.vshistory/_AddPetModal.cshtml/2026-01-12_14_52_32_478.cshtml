@@ -1,0 +1,169 @@
+@model PawsAndClaws.Models.ViewModels.AddPetViewModel
+
+<div id="addPetModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    @* Main Modal Container: Restricted to 90% of viewport height *@
+    <div class="bg-white rounded-[40px] w-full max-w-2xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+
+        @* FIXED HEADER *@
+        <div class="p-8 pb-4 flex justify-between items-center border-b border-gray-50 shrink-0">
+            <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                List a <span class="text-[#56C2B1]">new pet</span>
+            </h2>
+            <button type="button" onclick="closeAddPetModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        @* SCROLLABLE FORM AREA *@
+        <form id="addPetForm"
+              asp-controller="Pet"
+              asp-action="AddPet"
+              method="post"
+              enctype="multipart/form-data"
+              class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pr-6 mr-2">
+
+            @Html.AntiForgeryToken()
+
+            @* Pet Photo Upload *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Photo</label>
+                <div onclick="document.getElementById('petPhotoInput').click()"
+                     class="border-2 border-dashed border-gray-100 rounded-3xl p-10 flex flex-col items-center justify-center gap-3 hover:border-[#56C2B1]/50 hover:bg-[#56C2B1]/5 transition-all cursor-pointer group bg-gray-50">
+                    <div class="bg-white p-3 rounded-full group-hover:bg-[#56C2B1]/10 transition-colors">
+                        <i data-lucide="upload" class="w-6 h-6 text-gray-400 group-hover:text-[#56C2B1]"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-700">Click to upload image</p>
+                        <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-1">PNG, JPG TO 4MB</p>
+                    </div>
+                    <input id="petPhotoInput" type="file" name="PetPhoto" class="hidden" accept="image/*" />
+                </div>
+            </div>
+
+            @* Pet Identity Fields *@
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Name</label>
+                    <input type="text" asp-for="Name" placeholder="e.g. Josie Megatron"
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                    <span asp-validation-for="Name" class="text-xs text-red-500"></span>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+                    <input type="text" asp-for="Breed" placeholder="e.g. Labrador"
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                    <span asp-validation-for="Breed" class="text-xs text-red-500"></span>
+                </div>
+            </div>
+
+            @* Selection Controls *@
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age (Years)</label>
+                    <input type="number" asp-for="Age"
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+                    <span asp-validation-for="Age" class="text-xs text-red-500"></span>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Sex</label>
+                    <select asp-for="Gender"
+                            class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-xs text-red-500"></span>
+                </div>
+                <div class="space-y-2 col-span-2 md:col-span-1">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species</label>
+                    <select asp-for="Species"
+                            class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        <option value="">Select</option>
+                        <option value="Dog">Dog</option>
+                        <option value="Cat">Cat</option>
+                    </select>
+                    <span asp-validation-for="Species" class="text-xs text-red-500"></span>
+                </div>
+            </div>
+
+            @* Location Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Location</label>
+                <input type="text" asp-for="Location" placeholder="e.g. Quezon City, PH"
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+                <span asp-validation-for="Location" class="text-xs text-red-500"></span>
+            </div>
+
+            @* Description Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Description</label>
+                <textarea asp-for="Description" placeholder="Tell us about this pet... personality, quirks, special needs, etc."
+                          class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium resize-none h-28"></textarea>
+                <span asp-validation-for="Description" class="text-xs text-red-500"></span>
+            </div>
+
+            @* ACTION BUTTON *@
+            <div class="pt-4 pb-2">
+                <button type="submit"
+                        class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    List new pet
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Note: partials can't declare @section Scripts, so keep script inline or move to the parent view.
+    document.addEventListener('DOMContentLoaded', () => {
+        const addPetForm = document.getElementById('addPetForm');
+
+        if (!addPetForm) return;
+
+        addPetForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (typeof ModalManager === 'undefined' || !ModalManager.confirm) {
+                // Fallback: just submit if ModalManager isn't loaded
+                addPetForm.submit();
+                return;
+            }
+
+            ModalManager.confirm(
+                "List this pet?",
+                "Are you sure you want to add this pet to your inventory? You can edit the details later.",
+                "LIST PET",
+                "CANCEL",
+                () => {
+                    ModalManager.show(
+                        "Pet added successfully!",
+                        "Your new pet has been added to the inventory and is now available for adoption.",
+                        "GREAT",
+                        () => addPetForm.submit()
+                    );
+                }
+            );
+        });
+    });
+</script>
+
+<style>
+    /* Styling for the internal scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #F1F3F5;
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #56C2B1;
+    }
+</style>
