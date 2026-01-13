@@ -12,6 +12,7 @@ namespace PawsAndClaws.Models.ViewModels
         public string Location { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
-        public string? Description { get; set; } 
+        public string? Description { get; set; }
+        public bool IsAdminMode { get; set; } = false;
     }
 }
