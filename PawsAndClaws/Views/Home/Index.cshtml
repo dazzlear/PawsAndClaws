@@ -81,17 +81,17 @@
         </div>
 
         <div class="flex justify-center items-center gap-6 mt-20">
-            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+            <button id="prevBtn" class="text-gray-300 hover:text-[#F87004] transition-colors" aria-label="Previous">
                 <i data-lucide="chevron-left" class="w-6 h-6"></i>
             </button>
-            <div class="flex gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-[#56C2B1]"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+            <div id="dotsContainer" class="flex gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200 carousel-dot active" data-page="0"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200 carousel-dot" data-page="1"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200 carousel-dot" data-page="2"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200 carousel-dot" data-page="3"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-200 carousel-dot" data-page="4"></div>
             </div>
-            <button class="text-gray-300 hover:text-[#F87004] transition-colors">
+            <button id="nextBtn" class="text-gray-300 hover:text-[#F87004] transition-colors" aria-label="Next">
                 <i data-lucide="chevron-right" class="w-6 h-6"></i>
             </button>
         </div>
@@ -104,6 +104,16 @@
             const searchInput = document.getElementById('petSearch');
             const filterButtons = document.querySelectorAll('.filter-btn');
             const petCards = document.querySelectorAll('.pet-card');
+            
+            // Carousel variables
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dots = document.querySelectorAll('.carousel-dot');
+            const petGrid = document.getElementById('petGrid');
+            
+            let currentPage = 0;
+            const itemsPerPage = 8;
+            let totalPages = Math.ceil(petCards.length / itemsPerPage);
 
             const activeFilters = {
                 species: 'All',
@@ -111,6 +121,40 @@
                 size: 'All',
                 search: ''
             };
+
+            function updateCarousel() {
+                const visibleCards = Array.from(petCards).filter(card => card.style.display !== 'none');
+                totalPages = Math.ceil(visibleCards.length / itemsPerPage);
+                
+                // Reset to first page if current page is beyond the new total
+                if (currentPage >= totalPages) {
+                    currentPage = Math.max(0, totalPages - 1);
+                }
+                
+                // Hide all cards
+                visibleCards.forEach((card, index) => {
+                    const pageNumber = Math.floor(index / itemsPerPage);
+                    card.style.display = pageNumber === currentPage ? 'block' : 'none';
+                });
+                
+                // Update dots
+                dots.forEach((dot, index) => {
+                    if (index < totalPages) {
+                        dot.style.display = 'block';
+                        dot.classList.toggle('active', index === currentPage);
+                        dot.classList.toggle('bg-[#56C2B1]', index === currentPage);
+                        dot.classList.toggle('bg-gray-200', index !== currentPage);
+                    } else {
+                        dot.style.display = 'none';
+                    }
+                });
+                
+                // Update button states
+                prevBtn.disabled = currentPage === 0;
+                nextBtn.disabled = currentPage === totalPages - 1;
+                prevBtn.style.opacity = currentPage === 0 ? '0.5' : '1';
+                nextBtn.style.opacity = currentPage === totalPages - 1 ? '0.5' : '1';
+            }
 
             function filterPets() {
                 petCards.forEach(card => {
@@ -133,7 +177,36 @@
                         card.style.display = 'none';
                     }
                 });
+                
+                currentPage = 0;
+                updateCarousel();
             }
+
+            // Carousel button handlers
+            prevBtn.addEventListener('click', function () {
+                if (currentPage > 0) {
+                    currentPage--;
+                    updateCarousel();
+                }
+            });
+
+            nextBtn.addEventListener('click', function () {
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    updateCarousel();
+                }
+            });
+
+            // Dot click handlers
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    const page = parseInt(this.getAttribute('data-page'));
+                    if (page < totalPages) {
+                        currentPage = page;
+                        updateCarousel();
+                    }
+                });
+            });
 
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -160,6 +233,9 @@
                 activeFilters.search = this.value.toLowerCase().trim();
                 filterPets();
             });
+            
+            // Initialize carousel
+            updateCarousel();
         });
     </script>
 }
