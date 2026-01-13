@@ -199,4 +199,61 @@
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+
+    // ==================== ADMIN FUNCTIONS ====================
+    function openEditPetModal(petId) {
+        // Fetch pet data and populate the modal
+        fetch(`/Pet/GetPetData/${petId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate the edit form with pet data
+                document.querySelector('[name="Name"]').value = data.name || '';
+                document.querySelector('[name="Breed"]').value = data.breed || '';
+                document.querySelector('[name="Age"]').value = data.age || '';
+                document.querySelector('[name="Gender"]').value = data.gender || '';
+                document.querySelector('[name="Species"]').value = data.species || '';
+                document.querySelector('[name="Location"]').value = data.location || '';
+                document.querySelector('[name="Description"]').value = data.description || '';
+                
+                // Set the form action to include the pet ID using method override for POST
+                const form = document.getElementById('editPetForm');
+                form.action = `/Pet/EditPet/${petId}`;
+                form.method = 'post';
+                
+                // Open the modal
+                document.getElementById('editPetModal').classList.remove('hidden');
+                
+                // Reinitialize lucide icons in the modal
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching pet data:', error);
+                alert('Failed to load pet data');
+            });
+    }
+
+    function deletePet(petId) {
+        if (confirm(`Are you sure you want to delete this pet?`)) {
+            fetch(`/Pet/DeletePet/${petId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload the page to refresh the pet list
+                    location.reload();
+                } else {
+                    alert('Failed to delete pet');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting pet:', error);
+                alert('Error deleting pet');
+            });
+        }
+    }
 </script>
