@@ -1,0 +1,16 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: paws_sql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      SA_PASSWORD: "${SA_PASSWORD}"
+    ports:
+      - "${SQL_PORT:-1433}:1433"
+    volumes:
+      - paws_sql_data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  paws_sql_data:
