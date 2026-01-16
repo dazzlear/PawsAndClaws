@@ -1,0 +1,189 @@
+@using PawsAndClaws.Models.ViewModels
+@model PetCardViewModel
+
+<div class="pet-card relative w-72 h-[400px] rounded-3xl overflow-visible shadow-lg group mx-auto transition-transform transform hover:scale-[1.02] pointer-events-none"
+     data-species="@Model.Species"
+     data-gender="@Model.Gender"
+     data-size="@Model.Size"
+     data-name="@(Model.Name ?? "").ToLowerInvariant()"
+     data-breed="@(Model.Breed ?? "").ToLowerInvariant()">
+
+    @* --- CLICKABLE CARD LINK (Non-Admin) --- *@
+    @if (!Model.IsAdminMode)
+    {
+        <a asp-controller="Home"
+           asp-action="Details"
+           asp-route-id="@Model.Id"
+           class="absolute inset-0 z-10 pointer-events-auto"
+           style="cursor:pointer;"
+           aria-label="View details for @Model.Name"></a>
+    }
+
+    @* --- PET IMAGE --- *@
+    <img src="@Url.Content(Model.ImageUrl)" class="absolute inset-0 w-72 h-[400px] object-cover rounded-3xl" />
+
+    @* --- GRADIENT OVERLAY --- *@
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent rounded-3xl"></div>
+
+    @* --- STATUS BADGE (Top Right) --- *@
+    <div class="absolute top-5 right-5 z-20">
+        @{
+            var statusVariant = (Model.Status ?? "").ToLowerInvariant() switch
+            {
+                "pending" => "info",
+                "adopted" => "neutral",
+                "available" => "success",
+                _ => "neutral"
+            };
+        }
+        <partial name="_Badge" model='new BadgeViewModel { Text = Model.Status, Variant = statusVariant }' />
+    </div>
+
+    @* --- BOTTOM CONTENT AREA --- *@
+    <div class="absolute bottom-0 p-8 text-white w-full z-20">
+        <div class="flex items-start justify-between gap-3 mb-2">
+            <h2 class="text-xl font-bold">@Model.Name</h2>
+
+            @* --- ADMIN ACTIONS (Dropdown) --- *@
+            @if (Model.IsAdminMode)
+            {
+                <div class="relative z-40">
+                    <button type="button" 
+                            class="pet-dropdown-trigger p-2 hover:bg-white/20 rounded-full transition-colors text-white pointer-events-auto"
+                            data-pet-id="@Model.Id"
+                            aria-label="More options">
+                        <i data-lucide="more-vertical" class="w-5 h-5 pointer-events-none"></i>
+                    </button>
+
+                    @* CHANGES: 
+                       1. Added 'ring-1 ring-black/5' for better edge visibility against photos.
+                       2. Reduced width slightly to 'w-32' (optional, fits 'Edit Pet' nicely).
+                    *@
+                    <div class="pet-dropdown-menu hidden absolute right-0 bottom-full mb-2 w-32 bg-white ring-1 ring-black/5 rounded-xl shadow-xl z-50 overflow-hidden pointer-events-auto origin-bottom-right transition-all duration-200">
+                        
+                        @* Edit Button *@
+                        <button type="button" 
+                                class="pet-edit-btn w-full text-left px-3 py-2.5 text-xs font-bold text-[#F87004] hover:bg-[#F87004]/60 flex items-center gap-2 transition-colors"
+                                data-pet-id="@Model.Id">
+                            <i data-lucide="edit-2" class="w-4 h-4 text-[#F87004] flex-shrink-0"></i>
+                            <span>Edit</span>
+                        </button>
+                        
+                        @* Delete Button: Reduced padding, smaller text *@
+                        <button type="button"
+                                class="pet-delete-btn w-full text-left px-3 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors border-t border-gray-100"
+                                data-pet-id="@Model.Id">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-500"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            }
+            
+        </div>
+
+        <p class="text-xs opacity-90">@Model.Breed • @Model.Size • @Model.Age @(Model.Age == 1 ? "year" : "years") • @Model.Gender</p>
+        <p class="text-xs mt-2 flex items-center">
+            <i data-lucide="map-pin" class="w-4 h-4 mr-2"></i> @Model.Location
+        </p>
+
+        @* --- ACTION BUTTONS --- *@
+        @{
+            var btnText = "ADOPT NOW";
+            var btnVariant = "primary";
+            string? btnIcon = "arrow-right";
+            var btnClass = "mt-4 w-full pointer-events-auto";
+
+            if (string.Equals(Model.Status, "Pending", StringComparison.OrdinalIgnoreCase))
+            {
+                btnText = "PENDING";
+                btnVariant = "outline";
+                btnIcon = null;
+                btnClass += " text-white border-white hover:bg-white/20 hover:text-white";
+            }
+            else if (string.Equals(Model.Status, "Adopted", StringComparison.OrdinalIgnoreCase))
+            {
+                btnText = "ADOPTED";
+                btnVariant = "outline";
+                btnIcon = null;
+                btnClass += " text-white hover:bg-white/20 hover:text-white";
+            }
+        }
+
+        @if (!Model.IsAdminMode)
+        {
+            <partial name="_Button" model='new ButtonViewModel { Text = btnText, Variant = btnVariant, Icon = btnIcon, ClassName = btnClass }' />
+        }
+    </div>
+</div>
+
+@* --- SCRIPT SECTION --- *@
+<script>
+    if (typeof window.petCardScriptsInitialized === 'undefined') {
+        window.petCardScriptsInitialized = true;
+
+        // 1. Close ALL dropdowns on the page
+        window.closePetDropdowns = function() {
+            document.querySelectorAll('.pet-dropdown-menu').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        };
+
+        // 2. Toggle dropdown for specific button
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle dropdown toggle
+            document.addEventListener('click', function(event) {
+                const trigger = event.target.closest('.pet-dropdown-trigger');
+                
+                if (trigger) {
+                    event.stopPropagation();
+                    const menu = trigger.nextElementSibling;
+                    
+                    // Close all other menus
+                    closePetDropdowns();
+                    
+                    // Toggle current menu
+                    menu.classList.toggle('hidden');
+                } else if (!event.target.closest('.pet-dropdown-menu')) {
+                    // Close menus if clicking outside
+                    closePetDropdowns();
+                }
+            });
+
+            // Handle edit button clicks
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.pet-edit-btn')) {
+                    event.stopPropagation();
+                    const petId = event.target.closest('.pet-edit-btn').dataset.petId;
+                    closePetDropdowns();
+                    openEditPetModal(petId);
+                }
+            });
+
+            // Handle delete button clicks
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.pet-delete-btn')) {
+                    event.stopPropagation();
+                    const petId = event.target.closest('.pet-delete-btn').dataset.petId;
+                    closePetDropdowns();
+                    deletePet(petId);
+                }
+            });
+
+            // Reinitialize lucide icons when menus open
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.target.classList.contains('pet-dropdown-menu') && !mutation.target.classList.contains('hidden')) {
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.pet-dropdown-menu').forEach(menu => {
+                observer.observe(menu, { attributes: true, attributeFilter: ['class'] });
+            });
+        });
+    }
+</script>

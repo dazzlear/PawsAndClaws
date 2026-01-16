@@ -1,0 +1,106 @@
+@model PawsAndClaws.Models.ViewModels.ApplicationCardViewModel
+
+@* Main container: items-stretch ensures the image matches the content height precisely *@
+<div class="bg-white rounded-[45px] flex flex-col md:flex-row border border-gray-50 shadow-sm relative overflow-hidden group items-stretch max-h-[280px]">
+    
+    @* --- MEDIA SECTION --- *@
+    <div class="w-full md:w-64 relative shrink-0 rounded-none overflow-hidden">
+        <img src="@Model.ImageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        
+        <div class="absolute top-4 left-6">
+            <partial name="_Badge" model='new BadgeViewModel { 
+                Text = Model.Status, 
+                Variant = Model.Status.ToUpper() switch {
+                    "APPROVED" => "success",
+                    "REVIEW"   => "info",
+                    "PENDING" => "warning",
+                    "REJECTED" => "danger",
+                    _ => "neutral"
+                },
+                ClassName = "text-[10px] px-3 py-1"
+            }' />
+        </div>
+    </div>
+
+    @* --- DATA SECTION --- *@
+    <div class="flex-1 flex flex-col pt-12 pb-6 pr-10 pl-10">
+        
+        @* 1. HEADER LOGIC: Standard property mapping with functional dropdown *@
+        <div class="shrink-0">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-4xl font-bold text-[#2D2D2D] font-lilita leading-tight" style="font-family: 'Lilita One', cursive;">@Model.PetName</h3>
+                    <p class="text-[#F87004] text-[12px] font-medium mt-1">@Model.Breed • @Model.Details</p>
+                </div>
+
+                @* FUNCTIONAL DROPDOWN: Uses relative positioning for the menu anchor *@
+                <div class="relative dropdown-wrapper">
+                    <button class="dropdown-toggle text-gray-300 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-gray-50">
+                        <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                    </button>
+
+                    @* DROPDOWN MENU: Hidden by default. Ensure z-index is high enough to overlap grid items *@
+                    <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 py-2">
+                        @* BACKEND NOTE: Map these to specific AdoptionController actions *@
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 text-[11px] font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="message-circle" class="w-4 h-4 text-[#56C2B1]"></i>
+                            Contact Shelter
+                        </a>
+                        <div class="h-[1px] bg-gray-50 my-1 mx-4"></div>
+                        <a href="#" class="flex items-center gap-3 px-4 py-2 text-[11px] font-bold text-red-400 hover:bg-red-50 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            Cancel Application
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* 2. STEPPER LOGIC: State-driven progress tracker *@
+        <div class="flex-grow flex flex-col justify-center py-2">
+            <div class="relative">
+                <div class="absolute top-3 left-3 right-3 h-[4px] bg-gray-100 -z-0 overflow-hidden rounded-full">
+                    <div class="h-full bg-[#F87004] transition-all duration-700" 
+                         style="width: @((Model.CurrentStep - 1) * 33.33)%;"></div>
+                </div>
+
+                <div class="flex justify-between items-center relative z-10">
+                    @for (int i = 1; i <= 4; i++) {
+                        string stepClasses = (i < Model.CurrentStep) ? "bg-[#F87004] border-[#F87004] text-white" : 
+                                             (i == Model.CurrentStep) ? "bg-white border-[#F87004] text-[#F87004]" : 
+                                             "bg-white border-gray-100 text-gray-200";
+
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-black transition-all @stepClasses">
+                                @if (i < Model.CurrentStep) { <i data-lucide="check" class="w-3.5 h-3.5"></i> } else { @i }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="flex justify-between mt-3">
+                    @{ var labels = new[] { "APPLICATION", "PRE-APPROVED", "FINAL INTERVIEW", "READY TO GO" }; }
+                    @for (int i = 0; i < labels.Length; i++) {
+                        bool isActive = (i + 1 == Model.CurrentStep);
+                        <div class="w-6 flex justify-center text-center">
+                            <span class="w-20 flex-none text-[10px] font-medium leading-tight uppercase tracking-tighter transition-colors @(isActive ? "text-[#F87004]" : "text-gray-300")">
+                                @labels[i]
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* 3. ACTION LOGIC: Conditional CTA rendering based on application state *@
+        <div class="shrink-0 flex gap-3">
+            <button class="flex-1 bg-gray-50 text-gray-400 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">Details</button>
+            
+            @if(Model.Status.ToUpper() == "APPROVED") {
+                <button class="flex-1 bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100/50 transition-all active:scale-95">Schedule Visit</button>
+            } else {
+                <button class="flex-1 bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100/50 transition-all active:scale-95">View Progress</button>
+            }
+        </div>
+    </div>
+</div>
