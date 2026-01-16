@@ -173,8 +173,8 @@
         const matchesSearch = name.includes(searchInput) || breed.includes(searchInput);
         const matchesStatus =
             currentStatusFilter === "All"
-                ? status !== "CANCELLED"
-                : status === currentStatusFilter.toUpperCase()
+                ? status !== "cancelled"
+                : status === currentStatusFilter.toLowerCase()
 
         if (matchesSearch && matchesStatus) {
           card.style.display = "";

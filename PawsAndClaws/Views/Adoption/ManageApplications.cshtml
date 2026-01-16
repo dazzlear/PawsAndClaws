@@ -75,7 +75,7 @@
                                 @{
                                     var statusVariant = app.Status switch
                                     {
-                                        "REVIEW" => "info",
+                                        "REVIEW" => "orange",
                                         "PENDING" => "warning",
                                         "APPROVED" => "success",
                                         "REJECTED" => "danger",
@@ -273,5 +273,40 @@
                 });
             });
         }
+
+        // Status filter functionality
+        document.addEventListener('click', function (e) {
+            const filterBtn = e.target.closest('.flex.bg-gray-100\\/50 a');
+            if (!filterBtn) return;
+            
+            e.preventDefault();
+            
+            const filterContainer = filterBtn.closest('.flex.bg-gray-100\\/50');
+            const allFilterButtons = filterContainer.querySelectorAll('a');
+            // Extract just the status name (e.g., "Review" from "Review (1)")
+            const buttonText = filterBtn.textContent.trim().split('(')[0].trim();
+            
+            // Update active filter button UI
+            allFilterButtons.forEach(b => {
+                b.classList.remove('bg-[#F87004]', 'text-white', 'shadow-sm');
+                b.classList.add('text-gray-400', 'hover:text-gray-600');
+            });
+            filterBtn.classList.add('bg-[#F87004]', 'text-white', 'shadow-sm');
+            filterBtn.classList.remove('text-gray-400', 'hover:text-gray-600');
+            
+            // Filter table rows by status
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                // Skip the "no applications found" row
+                if (row.querySelector('td[colspan="4"]')) {
+                    return;
+                }
+                
+                const statusBadge = row.querySelector('td:nth-child(3)')?.textContent.trim().toUpperCase() || '';
+                const filterValue = buttonText.toUpperCase();
+                const isMatch = buttonText === 'All' || statusBadge.includes(filterValue);
+                row.style.display = isMatch ? '' : 'none';
+            });
+        });
     </script>
 }

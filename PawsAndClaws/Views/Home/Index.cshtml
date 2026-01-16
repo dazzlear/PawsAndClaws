@@ -158,17 +158,17 @@
 
             function filterPets() {
                 petCards.forEach(card => {
-                    const species = card.getAttribute('data-species');
-                    const gender = card.getAttribute('data-gender');
-                    const size = card.getAttribute('data-size');
+                    const species = (card.getAttribute('data-species') || '').toUpperCase();
+                    const gender = (card.getAttribute('data-gender') || '').toUpperCase();
+                    const size = (card.getAttribute('data-size') || '').toUpperCase();
                     const name = (card.getAttribute('data-name') || '').toLowerCase().trim();
                     const breed = (card.getAttribute('data-breed') || '').toLowerCase().trim();
                     const location = (card.getAttribute('data-location') || '').toLowerCase().trim();
                     const searchTerm = activeFilters.search.toLowerCase().trim();
 
-                    const matchesSpecies = activeFilters.species === 'All' || species === activeFilters.species;
-                    const matchesGender = activeFilters.gender === 'All' || gender === activeFilters.gender;
-                    const matchesSize = activeFilters.size === 'All' || size === activeFilters.size;
+                    const matchesSpecies = activeFilters.species === 'All' || species === activeFilters.species.toUpperCase();
+                    const matchesGender = activeFilters.gender === 'All' || gender === activeFilters.gender.toUpperCase();
+                    const matchesSize = activeFilters.size === 'All' || size === activeFilters.size.toUpperCase();
                     const matchesSearch = searchTerm === '' || 
                                         name.includes(searchTerm) || 
                                         breed.includes(searchTerm) ||

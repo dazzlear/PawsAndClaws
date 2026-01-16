@@ -18,6 +18,7 @@
 
         public string PetName { get; set; } = "";
         public string Breed { get; set; } = "";
+        public string Location { get; set; } = "";
         public string Details { get; set; } = "";
         public string ImageUrl { get; set; } = "";
 
