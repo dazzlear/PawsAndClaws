@@ -1,0 +1,278 @@
+@model PawsAndClaws.Models.ViewModels.AddPetViewModel
+
+<div id="addPetModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div class="bg-white rounded-[40px] w-full max-w-2xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+
+        @* FIXED HEADER *@
+        <div class="p-8 pb-4 flex justify-between items-center border-b border-gray-50 shrink-0">
+            <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                List a <span class="text-[#56C2B1]">new pet</span>
+            </h2>
+            <button type="button" onclick="closeAddPetModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        @* SCROLLABLE FORM AREA *@
+        <form id="addPetForm"
+              asp-controller="Pet"
+              asp-action="AddPet"
+              method="post"
+              enctype="multipart/form-data"
+              novalidate
+              class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pr-6 mr-2">
+
+            @Html.AntiForgeryToken()
+
+            @* Pet Photo Upload *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Photo</label>
+
+                <div class="border-2 border-dashed border-gray-100 rounded-3xl p-6 md:p-10 bg-gray-50">
+                    <div class="flex items-center gap-4">
+                        <button type="button"
+                                id="petPhotoPicker"
+                                class="shrink-0 bg-white border border-gray-100 rounded-2xl px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <i data-lucide="upload" class="w-5 h-5 text-gray-400"></i>
+                            <span class="text-xs font-black uppercase tracking-widest text-gray-600">Choose file</span>
+                        </button>
+
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-gray-700 truncate" id="petPhotoFileName">No file selected</p>
+                            <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-1">PNG, JPG up to 4MB</p>
+                        </div>
+                    </div>
+
+                    <input id="petPhotoInput" type="file" name="PetPhoto" class="hidden" accept="image/*" />
+
+                    @* Preview *@
+                    <div id="petPhotoPreviewWrap" class="hidden mt-5">
+                        <div class="rounded-3xl overflow-hidden border border-gray-100 bg-white">
+                            <img id="petPhotoPreview" src="" alt="Preview" class="w-full h-56 object-cover" />
+                        </div>
+                        <button type="button" id="removePetPhotoBtn"
+                                class="mt-3 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 transition-colors">
+                            Remove photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @* Pet Identity Fields *@
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Name <span class="text-red-500">*</span></label>
+                    <input type="text"
+                           asp-for="Name"
+                           placeholder="e.g. Josie Megatron"
+                           required
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                    <span asp-validation-for="Name" class="text-xs text-red-500"></span>
+                    <p class="text-[10px] font-bold text-red-500 hidden" data-native-error-for="Name">Pet name is required.</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+                    <input type="text"
+                           asp-for="Breed"
+                           placeholder="e.g. Labrador"
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                    <span asp-validation-for="Breed" class="text-xs text-red-500"></span>
+                </div>
+            </div>
+
+            @* Selection Controls *@
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age (Years)</label>
+                    <input type="number"
+                           asp-for="Age"
+                           min="0"
+                           value="0"
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+                    <span asp-validation-for="Age" class="text-xs text-red-500"></span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Sex</label>
+                    <select asp-for="Gender"
+                            class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-xs text-red-500"></span>
+                </div>
+
+                <div class="space-y-2 col-span-2 md:col-span-1">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species <span class="text-red-500">*</span></label>
+                    <select asp-for="Species"
+                            required
+                            class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        <option value="">Select</option>
+                        <option value="Dog">Dog</option>
+                        <option value="Cat">Cat</option>
+                    </select>
+                    <span asp-validation-for="Species" class="text-xs text-red-500"></span>
+                    <p class="text-[10px] font-bold text-red-500 hidden" data-native-error-for="Species">Species is required.</p>
+                </div>
+            </div>
+
+            @* Location Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Location</label>
+                <input type="text"
+                       asp-for="Location"
+                       placeholder="e.g. Quezon City, PH"
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+                <span asp-validation-for="Location" class="text-xs text-red-500"></span>
+            </div>
+
+            @* Description Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Description</label>
+                <textarea asp-for="Description"
+                          placeholder="Tell us about this pet... personality, quirks, special needs, etc."
+                          maxlength="2000"
+                          class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium resize-none h-28"></textarea>
+                <span asp-validation-for="Description" class="text-xs text-red-500"></span>
+            </div>
+
+            @* ACTION BUTTON *@
+            <div class="pt-4 pb-2">
+                <button type="submit"
+                        id="submitAddPetBtn"
+                        class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    List new pet
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('addPetForm');
+      if (!form) return;
+
+      // ---------- Photo picker + preview ----------
+      const pickerBtn = document.getElementById('petPhotoPicker');
+      const fileInput = document.getElementById('petPhotoInput');
+      const fileNameLabel = document.getElementById('petPhotoFileName');
+      const previewWrap = document.getElementById('petPhotoPreviewWrap');
+      const previewImg = document.getElementById('petPhotoPreview');
+      const removeBtn = document.getElementById('removePetPhotoBtn');
+
+      pickerBtn?.addEventListener('click', () => fileInput?.click());
+
+      fileInput?.addEventListener('change', () => {
+        const f = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+        if (!f) {
+          fileNameLabel.textContent = "No file selected";
+          previewWrap.classList.add('hidden');
+          previewImg.src = "";
+          return;
+        }
+
+        fileNameLabel.textContent = f.name;
+
+        // Optional: basic size check (4MB)
+        const maxBytes = 4 * 1024 * 1024;
+        if (f.size > maxBytes) {
+          alert("File is too large. Please upload up to 4MB.");
+          fileInput.value = "";
+          fileNameLabel.textContent = "No file selected";
+          previewWrap.classList.add('hidden');
+          previewImg.src = "";
+          return;
+        }
+
+        const url = URL.createObjectURL(f);
+        previewImg.src = url;
+        previewWrap.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      });
+
+      removeBtn?.addEventListener('click', () => {
+        fileInput.value = "";
+        fileNameLabel.textContent = "No file selected";
+        previewWrap.classList.add('hidden');
+        previewImg.src = "";
+      });
+
+      // ---------- Lightweight client validation (no bypass) ----------
+      const nameInput = form.querySelector('[name="Name"]');
+      const speciesSelect = form.querySelector('[name="Species"]');
+
+      const nameErr = form.querySelector('[data-native-error-for="Name"]');
+      const speciesErr = form.querySelector('[data-native-error-for="Species"]');
+
+      const setErr = (el, show) => {
+        if (!el) return;
+        el.classList.toggle('hidden', !show);
+      };
+
+      const validate = () => {
+        const nameOk = !!(nameInput && nameInput.value.trim().length > 0);
+        const speciesOk = !!(speciesSelect && speciesSelect.value.trim().length > 0);
+
+        setErr(nameErr, !nameOk);
+        setErr(speciesErr, !speciesOk);
+
+        return nameOk && speciesOk;
+      };
+
+      nameInput?.addEventListener('input', validate);
+      speciesSelect?.addEventListener('change', validate);
+
+      // ---------- Submit with confirm (ONLY if valid) ----------
+      form.addEventListener('submit', (e) => {
+        // prevent default until user confirms
+        e.preventDefault();
+
+        if (!validate()) {
+          // scroll to first invalid
+          (nameInput && !nameInput.value.trim()) ? nameInput.focus() : speciesSelect?.focus();
+          return;
+        }
+
+        if (typeof ModalManager === 'undefined' || !ModalManager.confirm) {
+          // Submit for real (native)
+          form.submit();
+          return;
+        }
+
+        ModalManager.confirm(
+          "List this pet?",
+          "Are you sure you want to add this pet to your inventory? You can edit the details later.",
+          "LIST PET",
+          "CANCEL",
+          () => {
+            // IMPORTANT: don't call form.dispatchEvent('submit') (loop)
+            form.submit();
+          }
+        );
+      });
+    });
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #F1F3F5;
+        border-radius: 10px;
+    }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #56C2B1;
+        }
+</style>

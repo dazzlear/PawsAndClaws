@@ -1,0 +1,178 @@
+﻿@model UserProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="min-h-[calc(100vh-5rem)] bg-[#FFFAF7] py-12 px-4 flex flex-col items-center">
+
+    @* Page Header *@
+    <div class="max-w-4xl w-full mb-8">
+        <h1 class="text-5xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+            My <span class="text-[#56C2B1]">Profile</span>
+        </h1>
+
+        @* optional: show success message after saving *@
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <p class="mt-3 text-sm font-semibold text-[#50B442]">@TempData["SuccessMessage"]</p>
+        }
+    </div>
+
+    @* Main Profile Card *@
+    <div class="bg-white rounded-[40px] shadow-sm border border-gray-50 flex flex-col md:flex-row max-w-4xl w-full overflow-hidden items-stretch">
+
+        @* Left: Profile Image *@
+        <div class="w-full md:w-2/5 relative shrink-0 min-h-[300px] md:min-h-full">
+            <img src="@Url.Content(Model.ProfilePictureUrl ?? "/images/profile-placeholder.jpg")"
+                 class="absolute inset-0 w-full h-full object-cover"
+                 alt="Profile Picture" />
+        </div>
+
+        @* Right: Profile Details *@
+        <div class="w-full md:w-3/5 p-10 md:p-14 space-y-10 relative">
+
+            @* Top Section *@
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <h2 class="text-4xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                    @Model.FullName
+                </h2>
+
+                @* Household Stats Badge (edit current pet modal) *@
+                <button type="button"
+                        id="openCurrentPetsModalBtn"
+                        class="bg-orange-50 border border-orange-100 rounded-full px-4 py-2 flex items-center gap-2 group cursor-pointer hover:bg-orange-100 transition-colors">
+                    <div class="text-center">
+                        <p class="text-[#F87004] text-[10px] font-black leading-none">@Model.CurrentPetCount Current Pets</p>
+                    </div>
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#F87004]"></i>
+                </button>
+            </div>
+
+            @* Fields *@
+            <div class="space-y-10">
+                <div class="flex flex-col gap-10">
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Email Address</h3>
+                        <p class="text-gray-700 font-medium text-lg break-all">@Model.Email</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Living Situation</h3>
+                        <p class="text-gray-700 font-medium text-lg">@Model.LivingSituation</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-2">Full Address</h3>
+                    <p class="text-gray-700 font-medium text-lg leading-relaxed max-w-lg">@Model.FullAddress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Bottom Actions *@
+    <div class="max-w-4xl w-full flex justify-end items-center gap-4 mt-8">
+        <div class="w-48">
+            @* ✅ use Id instead of relying on data-modal-target from _Button *@
+            <partial name="_Button" model='new ButtonViewModel {
+                Id = "openEditProfileModalBtn",
+                Text = "EDIT PROFILE",
+                Variant = "primary",
+                ClassName = "py-4 shadow-orange-100"
+            }' />
+        </div>
+
+        @* ✅ Logout form MUST have AntiForgeryToken
+        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="w-48 mt-6">
+            @Html.AntiForgeryToken()
+            <button type="button" id="logoutBtn"
+                    class="w-full py-4 rounded-full bg-[#C61E1E] text-white text-sm font-bold uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                LOG-OUT
+            </button>
+        </form> *@
+    </div>
+</div>
+
+<partial name="_EditProfileModal" model="Model" />
+<partial name="_EditCurrentPetsModal" model="Model" />
+
+@section Scripts {
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // -------------------------
+      // Profile modal
+      // -------------------------
+      const profileModal = document.getElementById('editProfileModal');
+      const openProfileBtn = document.getElementById('openEditProfileModalBtn');
+      const closeProfileBtn = document.getElementById('closeEditModal');
+
+      const openProfileModal = () => {
+        if (!profileModal) return;
+        profileModal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      };
+
+      const closeProfileModal = () => {
+        if (!profileModal) return;
+        profileModal.classList.add('hidden');
+      };
+
+      openProfileBtn?.addEventListener('click', openProfileModal);
+      closeProfileBtn?.addEventListener('click', closeProfileModal);
+
+      profileModal?.addEventListener('click', (e) => {
+        if (e.target === profileModal) closeProfileModal();
+      });
+
+      // -------------------------
+      // Current pets modal
+      // -------------------------
+      const petsModal = document.getElementById('editCurrentPetsModal');
+
+      // ✅ FIX: this is the actual badge button ID in your markup
+      const openPetsBtn = document.getElementById('openEditProfileModalBtn2');
+
+      const closePetsBtn = document.getElementById('closeCurrentPetsModal');
+      const donePetsBtn = document.getElementById('doneCurrentPetsModal');
+
+      const openPetsModal = () => {
+        if (!petsModal) return;
+        petsModal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      };
+
+      const closePetsModal = () => {
+        if (!petsModal) return;
+        petsModal.classList.add('hidden');
+      };
+
+      openPetsBtn?.addEventListener('click', openPetsModal);
+      closePetsBtn?.addEventListener('click', closePetsModal);
+
+      // If DONE is type="button", this closes.
+      // If DONE is type="submit", it will redirect anyway (no need to close).
+      donePetsBtn?.addEventListener('click', () => {
+        const isSubmit = (donePetsBtn.getAttribute('type') || '').toLowerCase() === 'submit';
+        if (!isSubmit) closePetsModal();
+      });
+
+      petsModal?.addEventListener('click', (e) => {
+        if (e.target === petsModal) closePetsModal();
+      });
+
+      // -------------------------
+      // ESC closes whichever is open
+      // -------------------------
+      window.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+
+        if (petsModal && !petsModal.classList.contains('hidden')) closePetsModal();
+        else if (profileModal && !profileModal.classList.contains('hidden')) closeProfileModal();
+      });
+
+      // Optional: reopen pets modal after redirect ?pets=1
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('pets') === '1') openPetsModal();
+    });
+  </script>
+}

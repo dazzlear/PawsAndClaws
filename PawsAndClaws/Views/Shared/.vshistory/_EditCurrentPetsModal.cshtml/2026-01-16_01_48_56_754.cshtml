@@ -1,0 +1,220 @@
+﻿@model UserProfileViewModel
+@using System.Text.Json
+
+<div id="editCurrentPetsModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+  <div class="bg-white rounded-[40px] w-full max-w-lg shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+
+    <div class="p-8 pb-4 flex justify-between items-center shrink-0 border-b border-gray-50/50">
+      <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+        Edit <span class="text-[#56C2B1]">Current Pets</span>
+      </h2>
+      <button type="button" id="closeCurrentPetsModal" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- save everything only when DONE is clicked -->
+    <form id="currentPetsForm"
+          asp-controller="Account"
+          asp-action="SaveOwnedPets"
+          method="post"
+          class="flex-1 overflow-y-auto p-8 pt-6 space-y-6 custom-scrollbar pr-6 mr-2">
+
+      @Html.AntiForgeryToken()
+
+      <!-- This is what gets posted on DONE -->
+      <input type="hidden" name="petsJson" id="petsJson" />
+
+      <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">
+        My Current Pets (<span id="petsCountLabel">0</span>)
+      </h3>
+
+      <!-- Chips rendered by JS -->
+      <div id="petChips" class="flex flex-wrap gap-3"></div>
+
+      <hr class="border-gray-50/50" />
+
+      <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">
+        Add a Pet
+      </h3>
+
+      <div class="flex gap-4">
+        <div class="flex-1 space-y-2">
+          <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Name</label>
+          <input id="newPetName"
+                 class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+        </div>
+
+        <div class="flex-1 space-y-2">
+          <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+          <input id="newPetBreed"
+                 class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-1 space-y-2">
+          <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species</label>
+          <select id="newPetSpecies"
+                  class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium appearance-none cursor-pointer">
+            <option value="">Select</option>
+            <option value="Dog">Dog</option>
+            <option value="Cat">Cat</option>
+          </select>
+        </div>
+
+        <div class="flex-1 space-y-2">
+          <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Gender</label>
+          <select id="newPetGender"
+                  class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium appearance-none cursor-pointer">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="w-24 space-y-2">
+          <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age</label>
+          <input id="newPetAge" type="number" min="0" value="0"
+                 class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+        </div>
+      </div>
+
+      <!-- ✅ Not submit -->
+      <button type="button" id="addPetBtn"
+              class="w-full border-2 border-dashed border-gray-100 rounded-3xl p-5 flex items-center justify-center gap-2 hover:border-[#56C2B1]/50 hover:bg-[#56C2B1]/5 transition-all cursor-pointer group text-gray-400 font-black text-sm">
+        <i data-lucide="plus" class="w-4 h-4 group-hover:text-[#56C2B1]"></i>
+        + Add Pet
+      </button>
+
+      <!-- Footer inside the form so DONE can submit -->
+      <div class="pt-2">
+        <button type="submit" id="doneCurrentPetsModal"
+                class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+          Done
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Initial pets from server -> JS array
+  window.__initialOwnedPets = @Html.Raw(JsonSerializer.Serialize(
+    Model.OwnedPets.Select(p => new {
+      name = p.Name,
+      breed = p.Breed,
+      species = p.Species,
+      gender = p.Gender,
+      age = p.Age
+    })
+  ));
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('editCurrentPetsModal');
+    const chipsWrap = document.getElementById('petChips');
+    const countLabel = document.getElementById('petsCountLabel');
+    const petsJsonInput = document.getElementById('petsJson');
+
+    const addBtn = document.getElementById('addPetBtn');
+
+    const nameEl = document.getElementById('newPetName');
+    const breedEl = document.getElementById('newPetBreed');
+    const speciesEl = document.getElementById('newPetSpecies');
+    const genderEl = document.getElementById('newPetGender');
+    const ageEl = document.getElementById('newPetAge');
+
+    let pets = Array.isArray(window.__initialOwnedPets) ? [...window.__initialOwnedPets] : [];
+
+    function syncHidden() {
+      if (countLabel) countLabel.textContent = String(pets.length);
+      if (petsJsonInput) petsJsonInput.value = JSON.stringify(pets);
+    }
+
+    function render() {
+      if (!chipsWrap) return;
+      chipsWrap.innerHTML = '';
+
+      if (pets.length === 0) {
+        chipsWrap.innerHTML = `<p class="text-sm font-medium text-gray-400">No pets added yet.</p>`;
+        syncHidden();
+        return;
+      }
+
+      pets.forEach((p, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'inline-flex items-center gap-3 bg-[#FFF4ED] border border-[#F87004] rounded-full px-4 py-2';
+
+        chip.innerHTML = `
+          <div class="flex flex-col">
+            <span class="text-[#F87004] font-bold text-xs">${escapeHtml(p.name || '')}</span>
+            <span class="text-[#F87004]/70 text-[10px]">
+              ${escapeHtml(p.breed || '')} • ${escapeHtml(p.species || '')} • ${escapeHtml(String(p.age ?? 0))} • ${escapeHtml(p.gender || '')}
+            </span>
+          </div>
+          <button type="button" class="text-[#F87004] hover:bg-orange-100 rounded-full p-1 transition-colors" title="Remove">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        `;
+
+        chip.querySelector('button')?.addEventListener('click', () => {
+          pets.splice(idx, 1);
+          render();
+        });
+
+        chipsWrap.appendChild(chip);
+      });
+
+      syncHidden();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    addBtn?.addEventListener('click', () => {
+      const pet = {
+        name: (nameEl?.value || '').trim(),
+        breed: (breedEl?.value || '').trim(),
+        species: (speciesEl?.value || '').trim(),
+        gender: (genderEl?.value || '').trim(),
+        age: parseInt(ageEl?.value || '0', 10) || 0
+      };
+
+      if (!pet.name || !pet.species || !pet.gender) {
+        ModalManager?.show?.("Missing info", "Please fill Pet Name, Species, and Gender.", "OKAY");
+        return;
+      }
+
+      pets.push(pet);
+
+      // clear inputs
+      if (nameEl) nameEl.value = '';
+      if (breedEl) breedEl.value = '';
+      if (speciesEl) speciesEl.value = '';
+      if (genderEl) genderEl.value = '';
+      if (ageEl) ageEl.value = '0';
+
+      render();
+    });
+
+    // render once on load
+    render();
+
+    // OPTIONAL: re-render whenever modal is opened (if you use window.openCurrentPetsModal)
+    const oldOpen = window.openCurrentPetsModal;
+    window.openCurrentPetsModal = () => {
+      oldOpen?.();
+      render();
+      if (modal && modal.classList.contains('hidden')) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    };
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+  });
+</script>
+

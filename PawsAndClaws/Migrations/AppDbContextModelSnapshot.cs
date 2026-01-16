@@ -191,7 +191,8 @@ namespace PawsAndClaws.Migrations
                     b.HasIndex("PetId");
 
                     b.HasIndex("UserId", "PetId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Status] <> 'CANCELLED'");
 
                     b.ToTable("AdoptionApplications");
                 });
@@ -204,24 +205,36 @@ namespace PawsAndClaws.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Age")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
 
                     b.Property<string>("Breed")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreatedAt");
 
-                    b.Property<string>("Sex")
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Species")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("OwnedPets");
                 });
@@ -438,9 +451,25 @@ namespace PawsAndClaws.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PawsAndClaws.Models.Entities.OwnedPet", b =>
+                {
+                    b.HasOne("PawsAndClaws.Models.Identity.ApplicationUser", "User")
+                        .WithMany("OwnedPets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PawsAndClaws.Models.Entities.Pet", b =>
                 {
                     b.Navigation("Applications");
+                });
+
+            modelBuilder.Entity("PawsAndClaws.Models.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("OwnedPets");
                 });
 #pragma warning restore 612, 618
         }

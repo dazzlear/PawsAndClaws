@@ -1,0 +1,203 @@
+﻿@model PawsAndClaws.Models.Entities.Pet
+
+<!-- Edit Pet Modal -->
+<div id="editPetModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    @* Main Modal Container: Restricted to 90% of viewport height *@
+    <div class="bg-white rounded-[40px] w-full max-w-2xl shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+        
+        @* FIXED HEADER *@
+        <div class="p-8 pb-4 flex justify-between items-center border-b border-gray-50 shrink-0">
+            <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                Edit <span class="text-[#56C2B1]">pet</span>
+            </h2>
+            <button type="button" onclick="closeEditPetModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        @* SCROLLABLE FORM AREA *@
+        <form id="editPetForm"
+              asp-controller="Pet"
+              asp-action="EditPet"
+              method="post"
+              enctype="multipart/form-data"
+              class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pr-6 mr-2">
+
+            @Html.AntiForgeryToken()
+
+            <!-- ✅ REQUIRED: Pet Id -->
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <!-- ✅ Optional: keep old image path if no new upload -->
+            <input type="hidden" name="ExistingImageUrl" value="@Model.ImageUrl" />
+        
+            class="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar pr-6 mr-2">
+            
+            @* Pet Photo Upload *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Photo</label>
+                <div onclick="document.getElementById('editPetPhotoInput').click()" 
+                     class="border-2 border-dashed border-gray-100 rounded-3xl p-10 flex flex-col items-center justify-center gap-3 hover:border-[#56C2B1]/50 hover:bg-[#56C2B1]/5 transition-all cursor-pointer group bg-gray-50">
+                    <div class="bg-white p-3 rounded-full group-hover:bg-[#56C2B1]/10 transition-colors">
+                        <i data-lucide="upload" class="w-6 h-6 text-gray-400 group-hover:text-[#56C2B1]"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-700">Click to upload image</p>
+                        <p class="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-1">PNG, JPG TO 4MB</p>
+                    </div>
+                    <input id="editPetPhotoInput" type="file" name="PetPhoto" class="hidden" accept="image/*" onchange="previewEditPhoto(event)" />
+                </div>
+            </div>
+
+            @* Pet Identity Fields *@
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Name</label>
+                    <input type="text" name="Name" value="@Model.Name" placeholder="e.g. Josie Megatron" 
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+                    <input type="text" name="Breed" value="@Model.Breed" placeholder="e.g. Labrador" 
+                           class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium" />
+                </div>
+            </div>
+
+            @* Selection Controls *@
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age (Years)</label>
+                    <input type="number" name="Age" value="@Model.Age" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Sex</label>
+                    <select name="Gender" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        @if (Model.Gender == "Male")
+                        {
+                            <option value="Male" selected>Male</option>
+                            <option value="Female">Female</option>
+                        }
+                        else
+                        {
+                            <option value="Male">Male</option>
+                            <option value="Female" selected>Female</option>
+                        }
+                    </select>
+                </div>
+                <div class="space-y-2 col-span-2 md:col-span-1">
+                    <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species</label>
+                    <select name="Species" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium appearance-none">
+                        @if (Model.Species == "Dog")
+                        {
+                            <option value="Dog" selected>Dog</option>
+                            <option value="Cat">Cat</option>
+                        }
+                        else
+                        {
+                            <option value="Dog">Dog</option>
+                            <option value="Cat" selected>Cat</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @* Location Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Location</label>
+                <input type="text" name="Location" value="@Model.Location" placeholder="e.g. Quezon City, PH" 
+                       class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium" />
+            </div>
+
+            @* Description Field *@
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Description</label>
+                <textarea name="Description" placeholder="Tell us about this pet... personality, quirks, special needs, etc." 
+                          class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none text-sm font-medium resize-none h-28">@Model.Description</textarea>
+            </div>
+
+            @* ACTION BUTTON: Positioned at the very end of the form flow *@
+            <div class="pt-4 pb-2">
+                <button type="submit" class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    Save Changes
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Styling for the internal scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #F1F3F5;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #56C2B1;
+    }
+</style>
+
+<!-- JavaScript Functions -->
+<script>
+    function closeEditPetModal() {
+        document.getElementById('editPetModal').classList.add('hidden');
+    }
+
+    function previewEditPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // You can add photo preview functionality here if needed
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const editPetForm = document.getElementById('editPetForm');
+        
+    //     if (editPetForm) {
+    //         editPetForm.addEventListener('submit', (e) => {
+    //             e.preventDefault();
+                
+    //             Show confirmation
+    //             ModalManager.confirm(
+    //                 "Save changes?",
+    //                 "You're about to update @Model.Name's information. These changes will be visible to potential adopters.",
+    //                 "SAVE CHANGES",
+    //                 "KEEP EDITING",
+    //                 () => {
+    //                     Show success message
+    //                     ModalManager.show(
+    //                         "Changes saved!",
+    //                         "@Model.Name's profile has been updated successfully.",
+    //                         "OKAY",
+    //                         () => {
+    //                             editPetForm.submit();
+    //                         }
+    //                     );
+    //                 },
+    //                 () => {
+    //                     Do nothing if they keep editing
+    //                 }
+    //             );
+    //         });
+    //     }
+    // });
+
+    // Close modal on backdrop click
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('editPetModal');
+        if (event.target === modal) {
+            closeEditPetModal();
+        }
+    });
+</script>
+

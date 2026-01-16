@@ -1,0 +1,203 @@
+﻿@model UserProfileViewModel
+
+<div id="editCurrentPetsModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div class="bg-white rounded-[40px] w-full max-w-lg shadow-2xl relative flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+
+        <div class="p-8 pb-4 flex justify-between items-center shrink-0 border-b border-gray-50/50">
+            <h2 class="text-3xl font-black text-[#2D2D2D]" style="font-family: 'Lilita One', cursive;">
+                Edit <span class="text-[#56C2B1]">Current Pets</span>
+            </h2>
+            <button type="button" id="closeCurrentPetsModal" class="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-8 pt-6 space-y-6 custom-scrollbar pr-6 mr-2">
+
+            <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">
+                My Current Pets (@Model.OwnedPets.Count)
+            </h3>
+
+            <div class="flex flex-wrap gap-3">
+                @if (Model.OwnedPets.Any())
+                {
+                    foreach (var pet in Model.OwnedPets)
+                    {
+                        <div class="inline-flex items-center gap-3 bg-[#FFF4ED] border border-[#F87004] rounded-full px-4 py-2">
+                            <div class="flex flex-col">
+                                <span class="text-[#F87004] font-bold text-xs">@pet.Name</span>
+                                <span class="text-[#F87004]/70 text-[10px]">
+                                    @pet.Breed • @pet.Species • @pet.Age • @pet.Gender
+                                </span>
+                            </div>
+
+                            <form asp-controller="Account" asp-action="RemoveOwnedPet" method="post" class="ml-1">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@pet.Id" />
+                                <button type="submit"
+                                        class="text-[#F87004] hover:bg-orange-100 rounded-full p-1 transition-colors"
+                                        title="Remove">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-sm font-medium text-gray-400">No pets added yet.</p>
+                }
+            </div>
+
+            <hr class="border-gray-50/50" />
+
+            <form id="addPetForm"
+                  asp-controller="Account"
+                  asp-action="AddOwnedPet"
+                  method="post"
+                  class="space-y-4">
+
+                @Html.AntiForgeryToken()
+
+                <h3 class="text-[10px] font-black text-gray-400 tracking-widest uppercase">
+                    Add a Pet
+                </h3>
+
+                <div class="flex gap-4">
+                    <div class="flex-1 space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Pet Name</label>
+                        <input asp-for="NewPet.Name"
+                               class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+                    </div>
+
+                    <div class="flex-1 space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Breed</label>
+                        <input asp-for="NewPet.Breed"
+                               class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-1 space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Species</label>
+                        <select asp-for="NewPet.Species"
+                                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium appearance-none cursor-pointer">
+                            <option value="">Select</option>
+                            <option value="Dog">Dog</option>
+                            <option value="Cat">Cat</option>
+                        </select>
+                    </div>
+
+                    <div class="flex-1 space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Gender</label>
+                        <select asp-for="NewPet.Gender"
+                                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none text-sm font-medium appearance-none cursor-pointer">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="w-24 space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 tracking-widest uppercase">Age</label>
+                        <input asp-for="NewPet.Age" type="number" min="0"
+                               class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:border-[#56C2B1] outline-none transition-all text-sm font-medium" />
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="w-full border-2 border-dashed border-gray-100 rounded-3xl p-5 flex items-center justify-center gap-2 hover:border-[#56C2B1]/50 hover:bg-[#56C2B1]/5 transition-all cursor-pointer group text-gray-400 font-black text-sm">
+                    <i data-lucide="plus" class="w-4 h-4 group-hover:text-[#56C2B1]"></i>
+                    + Add Pet
+                </button>
+            </form>
+        </div>
+
+        <div class="p-8 pt-4 border-t border-gray-50 shrink-0">
+            <button type="button" id="doneCurrentPetsModal"
+                    class="w-full py-4 rounded-full bg-gradient-to-r from-[#F87004] to-[#FBBF24] text-white text-[12px] font-black uppercase tracking-widest shadow-lg shadow-orange-100 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Done
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E5E7EB;
+        border-radius: 10px;
+    }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #56C2B1;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+         
+          const profileModal = document.getElementById('editProfileModal');
+          const openProfileBtn = document.getElementById('openEditProfileModalBtn');
+          const closeProfileBtn = document.getElementById('closeEditModal');
+
+          const openProfileModal = () => {
+            if (!profileModal) return;
+            profileModal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+          };
+
+          const closeProfileModal = () => {
+            if (!profileModal) return;
+            profileModal.classList.add('hidden');
+          };
+
+          openProfileBtn?.addEventListener('click', openProfileModal);
+          closeProfileBtn?.addEventListener('click', closeProfileModal);
+
+          profileModal?.addEventListener('click', (e) => {
+            if (e.target === profileModal) closeProfileModal();
+          });
+
+         
+          const openPetsBtn = document.getElementById('openEditProfileModalBtn2'); 
+
+          openPetsBtn?.addEventListener('click', () => {
+            // Uses the function exposed by _EditCurrentPetsModal.cshtml
+            if (window.openCurrentPetsModal) window.openCurrentPetsModal();
+            else {
+              // fallback 
+              const petsModal = document.getElementById('editCurrentPetsModal');
+              petsModal?.classList.remove('hidden');
+              if (window.lucide) lucide.createIcons();
+            }
+          });
+
+          // -------------------------
+          // ESC closes whichever is open
+          // -------------------------
+          window.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+
+            const petsModal = document.getElementById('editCurrentPetsModal');
+            if (petsModal && !petsModal.classList.contains('hidden')) {
+              window.closeCurrentPetsModal?.() ?? petsModal.classList.add('hidden');
+              return;
+            }
+
+            if (profileModal && !profileModal.classList.contains('hidden')) {
+              closeProfileModal();
+            }
+          });
+        });
+    </script>
+}
