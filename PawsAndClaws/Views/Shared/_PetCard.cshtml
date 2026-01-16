@@ -114,7 +114,11 @@
 
         @if (!Model.IsAdminMode)
         {
-            <partial name="_Button" model='new ButtonViewModel { Text = btnText, Variant = btnVariant, Icon = btnIcon, ClassName = btnClass }' />
+            <div class="relative z-30">
+                <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id" class="no-underline">
+                    <partial name="_Button" model='new ButtonViewModel { Text = btnText, Variant = btnVariant, Icon = btnIcon, ClassName = btnClass }' />
+                </a>
+            </div>
         }
     </div>
 </div>
