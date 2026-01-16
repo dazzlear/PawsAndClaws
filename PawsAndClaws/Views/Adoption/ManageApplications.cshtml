@@ -63,7 +63,11 @@
                             <td class="px-6 py-5">
                                 <div class="flex items-center gap-3">
                                     <img src="@app.ImageUrl" class="w-10 h-10 rounded-full object-cover" />
-                                    <p class="text-sm font-bold text-[#2D2D2D]">@app.PetName</p>
+                                    <div>
+                                        <p class="text-sm font-bold text-[#2D2D2D]">@app.PetName</p>
+                                        <p class="text-xs text-gray-500">@app.Breed</p>
+                                        <p class="text-xs text-gray-400">@app.Location</p>
+                                    </div>
                                 </div>
                             </td>
 
@@ -247,5 +251,27 @@
                     .forEach(m => m.classList.add('hidden'));
             }
         });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchApplications');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase().trim();
+                const tableRows = document.querySelectorAll('tbody tr');
+
+                tableRows.forEach(row => {
+                    // Skip the "no applications found" row
+                    if (row.querySelector('td[colspan="4"]')) {
+                        return;
+                    }
+
+                    const applicantName = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase().trim() || '';
+                    const petInfo = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase().trim() || '';
+                    
+                    const matches = searchTerm === '' || applicantName.includes(searchTerm) || petInfo.includes(searchTerm);
+                    row.style.display = matches ? '' : 'none';
+                });
+            });
+        }
     </script>
 }

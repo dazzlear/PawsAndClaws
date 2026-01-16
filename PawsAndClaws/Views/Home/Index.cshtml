@@ -161,15 +161,18 @@
                     const species = card.getAttribute('data-species');
                     const gender = card.getAttribute('data-gender');
                     const size = card.getAttribute('data-size');
-                    const name = card.getAttribute('data-name');
-                    const breed = card.getAttribute('data-breed');
+                    const name = (card.getAttribute('data-name') || '').toLowerCase().trim();
+                    const breed = (card.getAttribute('data-breed') || '').toLowerCase().trim();
+                    const location = (card.getAttribute('data-location') || '').toLowerCase().trim();
+                    const searchTerm = activeFilters.search.toLowerCase().trim();
 
                     const matchesSpecies = activeFilters.species === 'All' || species === activeFilters.species;
                     const matchesGender = activeFilters.gender === 'All' || gender === activeFilters.gender;
                     const matchesSize = activeFilters.size === 'All' || size === activeFilters.size;
-                    const matchesSearch = activeFilters.search === '' || 
-                                        name.includes(activeFilters.search) || 
-                                        breed.includes(activeFilters.search);
+                    const matchesSearch = searchTerm === '' || 
+                                        name.includes(searchTerm) || 
+                                        breed.includes(searchTerm) ||
+                                        location.includes(searchTerm);
 
                     if (matchesSpecies && matchesGender && matchesSize && matchesSearch) {
                         card.style.display = 'block';

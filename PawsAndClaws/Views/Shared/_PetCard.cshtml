@@ -8,7 +8,8 @@
      data-gender="@(Model.Gender ?? "")"
      data-size="@(Model.Size ?? "")"
      data-name="@(Model.Name ?? "").ToLowerInvariant()"
-     data-breed="@(Model.Breed ?? "").ToLowerInvariant()">
+     data-breed="@(Model.Breed ?? "").ToLowerInvariant()"
+     data-location="@(Model.Location ?? "").ToLowerInvariant()">
 
     @* --- CLICKABLE CARD LINK (Non-Admin) --- *@
     @if (!Model.IsAdminMode)
